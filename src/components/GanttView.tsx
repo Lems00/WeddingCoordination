@@ -307,8 +307,13 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
           </div>
 
           {/* Timeline Content */}
-          <div className="flex-1 overflow-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-slate-50 [&::-webkit-scrollbar-thumb]:bg-indigo-400 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar]:w-2">
-            <div className="relative flex" style={{ minWidth: "100%" }}>
+          <div className="flex-1 overflow-auto [&::-webkit-scrollbar]:h-3 [&::-webkit-scrollbar-track]:bg-slate-100 [&::-webkit-scrollbar-thumb]:bg-indigo-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar]:w-3">
+            <div className="relative" style={{ minWidth: "100%" }}>
+              {/* Today vertical line */}
+              {TODAY >= timelineStart && TODAY <= timelineEnd && (
+                <div className="absolute top-0 bottom-0 w-px bg-red-500/40 z-20 pointer-events-none" style={{ left: `${todayX}%` }} />
+              )}
+
               {PHASES.map((phase) => {
                 const phaseTasks = groupedByPhase[phase];
                 if (phaseTasks.length === 0) return null;
@@ -316,7 +321,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                 const phaseColor = getPhaseColor(phase);
 
                 return (
-                  <div key={phase} className="flex-1 border-r border-slate-100">
+                  <div key={phase}>
                     {/* Phase header row */}
                     <div className="bg-slate-50 border-b border-slate-100 h-11 flex items-center relative">
                       {ticks.map((t, i) => (
@@ -358,9 +363,6 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                             {ticks.map((t, i) => (
                               <div key={i} className="absolute top-0 bottom-0 w-px bg-slate-100" style={{ left: `${px(t)}%` }} />
                             ))}
-                            {TODAY >= timelineStart && TODAY <= timelineEnd && (
-                              <div className="absolute top-0 bottom-0 w-px bg-red-500/20 z-10" style={{ left: `${todayX}%` }} />
-                            )}
 
                             {/* Task bar */}
                             <div
@@ -373,7 +375,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                                 width: `${barW}%`,
                                 opacity: isDimmed ? 0.5 : 1,
                               }}
-                              title={`${task.id} — ${task.task}`}
+                              title={`${task.id} — ${task.task} (${task.status})`}
                             >
                               {barW > 30 && (
                                 <span
