@@ -112,29 +112,6 @@ export default function Tasks() {
         )}
       </div>
 
-      {/* Légende des codes couleur de l'équipe */}
-      {assigneeLegend.length > 0 && (
-        <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-2.5 flex items-center gap-1.5">
-            <Users className="w-3.5 h-3.5" />
-            Codes couleur de l'équipe
-          </p>
-          <div className="flex flex-wrap gap-2.5">
-            {assigneeLegend.map((a) => (
-              <div key={a.label} className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full bg-slate-50 border border-slate-200">
-                <span
-                  className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold ring-2 ring-white shadow-sm"
-                  style={{ backgroundColor: a.color }}
-                >
-                  {a.code}
-                </span>
-                <span className="text-xs font-medium text-slate-700">{a.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[200px]">

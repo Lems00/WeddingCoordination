@@ -90,6 +90,9 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   const todayX = px(TODAY);
   const isWkEnd = view === "jour";
 
+  // Calculate actual content width - ensure it's always wide enough for scrollbar
+  const contentMinWidth = Math.max(150, numPeriods * 15); // Force minimum width for scrollbar visibility
+
   // Toggle phase collapse
   const togglePhase = (p: string) => {
     setCollapsed((prev) => {
@@ -269,8 +272,8 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
         {/* Right Timeline */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Timeline Header */}
-          <div className="bg-white border-b border-slate-200 flex-shrink-0 overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-slate-50 [&::-webkit-scrollbar-thumb]:bg-indigo-400 [&::-webkit-scrollbar-thumb]:rounded-full">
-            <div className="relative h-11 flex" style={{ minWidth: "100%" }}>
+          <div className="bg-white border-b border-slate-200 flex-shrink-0 overflow-x-scroll">
+            <div className="relative h-11 flex" style={{ minWidth: `${contentMinWidth}%` }}>
               <div className="relative border-b border-slate-200 bg-white flex-1">
                 {/* Weekend shading */}
                 {isWkEnd &&
@@ -307,8 +310,8 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
           </div>
 
           {/* Timeline Content */}
-          <div className="flex-1 overflow-auto [&::-webkit-scrollbar]:h-3 [&::-webkit-scrollbar-track]:bg-slate-100 [&::-webkit-scrollbar-thumb]:bg-indigo-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar]:w-3">
-            <div className="relative" style={{ minWidth: "100%" }}>
+          <div className="flex-1 overflow-y-auto overflow-x-scroll pb-3">
+            <div className="relative" style={{ minWidth: `${contentMinWidth}%` }}>
               {/* Today vertical line */}
               {TODAY >= timelineStart && TODAY <= timelineEnd && (
                 <div className="absolute top-0 bottom-0 w-px bg-red-500/40 z-20 pointer-events-none" style={{ left: `${todayX}%` }} />
