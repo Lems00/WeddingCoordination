@@ -9,7 +9,8 @@
       "mcp__Claude_Preview__preview_start",
       "Bash(node scripts/convert-to-seed.js)",
       "Bash(npx wrangler *)",
-      "Bash(timeout 10 pnpm dev)"
+      "Bash(timeout 10 pnpm dev)",
+      "mcp__visualize__show_widget"
     ]
   }
 }
