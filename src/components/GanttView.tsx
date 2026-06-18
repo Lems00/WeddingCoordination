@@ -5,7 +5,6 @@ import { cn } from "../utils/cn";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import {
   getTimelineConstants,
-  PX_PER_DAY,
   addDays,
   getDayStarts,
   getMonthStarts,
@@ -18,7 +17,6 @@ import {
   getTaskStatusBgClass,
   calculatePosition,
   getPhaseColor,
-  getPhaseColorClass,
   getDateRangeFromTasks,
 } from "../utils/ganttHelpers";
 import { getResponsibleName, getAssigneeStyle, PHASES } from "../data";
@@ -89,9 +87,6 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
 
   const todayX = px(TODAY);
   const isWkEnd = view === "jour";
-
-  // Calculate actual content width - ensure it's always wide enough for scrollbar
-  const contentMinWidth = Math.max(150, numPeriods * 15); // Force minimum width for scrollbar visibility
 
   // Toggle phase collapse
   const togglePhase = (p: string) => {
@@ -196,31 +191,73 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
         </div>
       )}
 
-      {/* Main Gantt Area */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Left Sidebar */}
-        <div className="w-64 flex-shrink-0 flex flex-col border-r border-slate-100 bg-white">
-          {/* Header */}
-          <div className="px-4 py-2 bg-slate-50 border-b border-slate-200 flex-shrink-0">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tâche</span>
+      {/* Single scrollable container for header + tasks */}
+      <div className="flex-1 overflow-auto">
+        <div style={{ minWidth: "100%" }}>
+          {/* Timeline header row — sticky top */}
+          <div className="sticky top-0 z-30 flex" style={{ height: HEAD_H }}>
+            {/* Sidebar header */}
+            <div
+              className="sticky left-0 z-40 bg-white border-r border-b border-slate-100 flex items-center px-4"
+              style={{ width: SIDEBAR_W, minWidth: SIDEBAR_W }}
+            >
+              <span className="text-[9px] font-semibold uppercase tracking-wider text-slate-500">Tâche</span>
+            </div>
+
+            {/* Timeline header */}
+            <div className="relative border-b border-slate-100 bg-white flex-1">
+              {/* Weekend shading */}
+              {isWkEnd &&
+                ticks
+                  .filter((t) => isWeekend(t))
+                  .map((t, i) => (
+                    <div
+                      key={i}
+                      className="absolute top-0 bottom-0 bg-slate-50"
+                      style={{ left: `${px(t)}%`, width: percentPerPeriod + "%" }}
+                    />
+                  ))}
+
+              {/* Tick marks and labels */}
+              {ticks.map((tick, i) => {
+                const x = px(tick);
+                const active = isActiveTick(tick);
+                return (
+                  <div key={i} className="absolute top-0 bottom-0 flex flex-col justify-end pb-1" style={{ left: `${x}%` }}>
+                    <div className="w-px h-1.5 bg-slate-200 mb-1" />
+                    <span className={cn("text-[9px] whitespace-nowrap pl-1 font-medium", active ? "text-indigo-600" : "text-slate-600")}>
+                      {tickLabel(tick)}
+                    </span>
+                  </div>
+                );
+              })}
+
+              {/* Today line */}
+              {TODAY >= timelineStart && TODAY <= timelineEnd && (
+                <div className="absolute top-0 bottom-0 w-px bg-red-500/40 z-10" style={{ left: `${todayX}%` }} />
+              )}
+            </div>
           </div>
 
-          {/* Task List */}
-          <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-white [&::-webkit-scrollbar-thumb]:bg-indigo-300 [&::-webkit-scrollbar-thumb]:rounded-full">
-            {PHASES.map((phase) => {
-              const phaseTasks = groupedByPhase[phase];
-              if (phaseTasks.length === 0) return null;
+          {/* Phase + task rows */}
+          {PHASES.map((phase) => {
+            const phaseTasks = groupedByPhase[phase];
+            if (phaseTasks.length === 0) return null;
 
-              const isCollapsed = collapsed.has(phase);
-              const phaseColor = getPhaseColor(phase);
+            const isCollapsed = collapsed.has(phase);
+            const phaseColor = getPhaseColor(phase);
 
-              return (
-                <div key={phase}>
-                  {/* Phase Header */}
-                  <div className="bg-slate-50 border-b border-slate-100 px-4 py-1.5 sticky top-0 z-5">
+            return (
+              <div key={phase}>
+                {/* Phase header row */}
+                <div className="flex" style={{ height: PHASE_H }}>
+                  <div
+                    className="sticky left-0 z-20 bg-slate-50 border-r border-b border-slate-100 flex items-center"
+                    style={{ width: SIDEBAR_W, minWidth: SIDEBAR_W }}
+                  >
                     <button
                       onClick={() => togglePhase(phase)}
-                      className="w-full flex items-center gap-2 hover:bg-slate-100 rounded p-1 transition"
+                      className="w-full flex items-center gap-2 px-4 h-full hover:bg-slate-100 transition"
                     >
                       {isCollapsed ? (
                         <ChevronRight size={14} className="text-slate-700" />
@@ -239,166 +276,96 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                     </button>
                   </div>
 
-                  {/* Task List */}
-                  {!isCollapsed &&
-                    phaseTasks.map((task) => {
-                      const isH = hovered === task.id;
-                      const responsibleName = getResponsibleName(task.responsible_user_id, users);
-                      const assignee = getAssigneeStyle(responsibleName);
+                  <div className="relative border-b border-slate-100 bg-white flex-1">
+                    {ticks.map((t, i) => (
+                      <div key={i} className="absolute top-0 bottom-0 w-px bg-slate-200" style={{ left: `${px(t)}%` }} />
+                    ))}
+                    {TODAY >= timelineStart && TODAY <= timelineEnd && (
+                      <div className="absolute top-0 bottom-0 w-px bg-red-500/20" style={{ left: `${todayX}%` }} />
+                    )}
+                  </div>
+                </div>
 
-                      return (
+                {/* Task rows */}
+                {!isCollapsed &&
+                  phaseTasks.map((task) => {
+                    const barX = px(new Date(task.start_date));
+                    const barW = Math.max(px(new Date(task.end_date)) - barX, 4);
+                    const isH = hovered === task.id;
+                    const responsibleName = getResponsibleName(task.responsible_user_id, users);
+                    const assignee = getAssigneeStyle(responsibleName);
+                    const isDimmed = task.status === "À faire" || task.status === "Bloqué";
+
+                    return (
+                      <div
+                        key={task.id}
+                        className="flex border-b border-slate-50 hover:bg-slate-50/50 transition"
+                        style={{ height: ROW_H }}
+                        onMouseEnter={() => setHovered(task.id)}
+                        onMouseLeave={() => setHovered(null)}
+                      >
+                        {/* Task info sidebar */}
                         <div
-                          key={task.id}
                           className={cn(
-                            "border-b border-slate-50 hover:bg-slate-50/50 transition px-4 py-2 flex items-center gap-2 cursor-default",
-                            isH && "bg-slate-50"
+                            "sticky left-0 z-20 border-r border-slate-100 flex items-center gap-2 px-4 transition",
+                            isH ? "bg-slate-50" : "bg-white"
                           )}
-                          onMouseEnter={() => setHovered(task.id)}
-                          onMouseLeave={() => setHovered(null)}
+                          style={{ width: SIDEBAR_W, minWidth: SIDEBAR_W }}
                         >
                           <div className="flex-1 min-w-0">
                             <div className="text-[10px] font-mono font-bold text-slate-600">{task.id}</div>
                             <div className="text-xs text-slate-700 truncate">{task.task}</div>
                           </div>
                         </div>
-                      );
-                    })}
-                </div>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* Right Timeline */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Timeline Header */}
-          <div className="bg-white border-b border-slate-200 flex-shrink-0 overflow-x-scroll">
-            <div className="relative h-11 flex" style={{ minWidth: `${contentMinWidth}%` }}>
-              <div className="relative border-b border-slate-200 bg-white flex-1">
-                {/* Weekend shading */}
-                {isWkEnd &&
-                  ticks
-                    .filter((t) => isWeekend(t))
-                    .map((t, i) => (
-                      <div
-                        key={i}
-                        className="absolute top-0 bottom-0 bg-slate-50"
-                        style={{ left: `${px(t)}%`, width: percentPerPeriod + "%" }}
-                      />
-                    ))}
+                        {/* Timeline cell with task bar */}
+                        <div className="relative flex-1 bg-white">
+                          {/* Grid background */}
+                          {isWkEnd &&
+                            ticks
+                              .filter((t) => isWeekend(t))
+                              .map((t, i) => (
+                                <div
+                                  key={i}
+                                  className="absolute top-0 bottom-0 bg-white/50"
+                                  style={{ left: `${px(t)}%`, width: percentPerPeriod + "%" }}
+                                />
+                              ))}
+                          {ticks.map((t, i) => (
+                            <div key={i} className="absolute top-0 bottom-0 w-px bg-slate-100" style={{ left: `${px(t)}%` }} />
+                          ))}
 
-                {/* Tick marks and labels */}
-                {ticks.map((tick, i) => {
-                  const x = px(tick);
-                  const active = isActiveTick(tick);
-                  return (
-                    <div key={i} className="absolute top-0 bottom-0 flex flex-col justify-end pb-1" style={{ left: `${x}%` }}>
-                      <div className="w-px h-1.5 bg-slate-200 mb-1" />
-                      <span className={cn("text-[9px] whitespace-nowrap pl-1 font-medium", active ? "text-indigo-600" : "text-slate-600")}>
-                        {tickLabel(tick)}
-                      </span>
-                    </div>
-                  );
-                })}
-
-                {/* Today line */}
-                {TODAY >= timelineStart && TODAY <= timelineEnd && (
-                  <div className="absolute top-0 bottom-0 w-px bg-red-500/40 z-10" style={{ left: `${todayX}%` }} />
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Timeline Content */}
-          <div className="flex-1 overflow-y-auto overflow-x-scroll pb-3">
-            <div className="relative" style={{ minWidth: `${contentMinWidth}%` }}>
-              {/* Today vertical line */}
-              {TODAY >= timelineStart && TODAY <= timelineEnd && (
-                <div className="absolute top-0 bottom-0 w-px bg-red-500/40 z-20 pointer-events-none" style={{ left: `${todayX}%` }} />
-              )}
-
-              {PHASES.map((phase) => {
-                const phaseTasks = groupedByPhase[phase];
-                if (phaseTasks.length === 0) return null;
-                const isCollapsed = collapsed.has(phase);
-                const phaseColor = getPhaseColor(phase);
-
-                return (
-                  <div key={phase}>
-                    {/* Phase header row */}
-                    <div className="bg-slate-50 border-b border-slate-100 h-11 flex items-center relative">
-                      {ticks.map((t, i) => (
-                        <div key={i} className="absolute top-0 bottom-0 w-px bg-slate-200" style={{ left: `${px(t)}%` }} />
-                      ))}
-                    </div>
-
-                    {/* Task rows */}
-                    {!isCollapsed &&
-                      phaseTasks.map((task) => {
-                        const barX = px(new Date(task.start_date));
-                        const barW = Math.max(px(new Date(task.end_date)) - barX, 4);
-                        const isH = hovered === task.id;
-                        const responsibleName = getResponsibleName(task.responsible_user_id, users);
-                        const assignee = getAssigneeStyle(responsibleName);
-                        const isDimmed = task.status === "À faire" || task.status === "Bloqué";
-
-                        return (
+                          {/* Task bar */}
                           <div
-                            key={task.id}
                             className={cn(
-                              "border-b border-slate-50 hover:bg-slate-50/50 transition h-10 relative",
-                              isH && "bg-slate-50"
+                              "absolute top-1.5 bottom-1.5 rounded-full shadow-sm flex items-center gap-1.5 px-2 text-white text-[10px] font-medium overflow-hidden whitespace-nowrap hover:shadow-md transition cursor-pointer",
+                              getTaskStatusBgClass(task.status)
                             )}
-                            onMouseEnter={() => setHovered(task.id)}
-                            onMouseLeave={() => setHovered(null)}
+                            style={{
+                              left: `${barX}%`,
+                              width: `${barW}%`,
+                              opacity: isDimmed ? 0.5 : 1,
+                            }}
+                            title={`${task.id} — ${task.task} (${task.status})`}
                           >
-                            {/* Grid background */}
-                            {isWkEnd &&
-                              ticks
-                                .filter((t) => isWeekend(t))
-                                .map((t, i) => (
-                                  <div
-                                    key={i}
-                                    className="absolute top-0 bottom-0 bg-white/50"
-                                    style={{ left: `${px(t)}%`, width: percentPerPeriod + "%" }}
-                                  />
-                                ))}
-                            {ticks.map((t, i) => (
-                              <div key={i} className="absolute top-0 bottom-0 w-px bg-slate-100" style={{ left: `${px(t)}%` }} />
-                            ))}
-
-                            {/* Task bar */}
-                            <div
-                              className={cn(
-                                "absolute top-1.5 bottom-1.5 rounded-full shadow-sm flex items-center gap-1.5 px-2 text-white text-[10px] font-medium overflow-hidden whitespace-nowrap hover:shadow-md transition cursor-pointer",
-                                getTaskStatusBgClass(task.status)
-                              )}
-                              style={{
-                                left: `${barX}%`,
-                                width: `${barW}%`,
-                                opacity: isDimmed ? 0.5 : 1,
-                              }}
-                              title={`${task.id} — ${task.task} (${task.status})`}
-                            >
-                              {barW > 30 && (
-                                <span
-                                  className="w-4 h-4 rounded-full flex items-center justify-center text-[7px] font-bold flex-shrink-0 ring-1 ring-white/40"
-                                  style={{ backgroundColor: assignee.color }}
-                                >
-                                  {assignee.code}
-                                </span>
-                              )}
-                              {barW > 60 && <span className="truncate text-[9px]">{responsibleName}</span>}
-                              {task.status === "Terminé" && barW > 50 && <span className="ml-auto text-[9px]">✓</span>}
-                            </div>
+                            {barW > 30 && (
+                              <span
+                                className="w-4 h-4 rounded-full flex items-center justify-center text-[7px] font-bold flex-shrink-0 ring-1 ring-white/40"
+                                style={{ backgroundColor: assignee.color }}
+                              >
+                                {assignee.code}
+                              </span>
+                            )}
+                            {barW > 60 && <span className="truncate text-[9px]">{responsibleName}</span>}
+                            {task.status === "Terminé" && barW > 50 && <span className="ml-auto text-[9px]">✓</span>}
                           </div>
-                        );
-                      })}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            );
+          })}
         </div>
       </div>
 
