@@ -1,0 +1,10 @@
+# Fichiers à NE PAS servir comme assets statiques par Cloudflare Pages.
+# (Cloudflare lit ce fichier à la racine du dossier déployé.)
+wrangler.toml
+_worker.js
+.dev.vars
+.dev.vars.example
+*.toml
+*.md
+package.json
+tsconfig.json

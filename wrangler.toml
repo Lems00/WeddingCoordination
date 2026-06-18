@@ -1,0 +1,68 @@
+# =============================================================================
+#  wrangler.toml — Configuration Cloudflare Pages + D1 pour EventFlow Pro
+# =============================================================================
+#  Ce fichier est lu par Wrangler en LOCAL et lors du déploiement.
+#  Il NE doit PAS être servi comme asset statique (voir public/.assetsignore).
+#
+#  Déploiement :   npx wrangler pages deploy dist
+#  Dev local   :   npx wrangler pages dev dist
+# =============================================================================
+
+# Nom du projet Cloudflare Pages (doit correspondre au projet dans le dashboard)
+name = "eventflow"
+
+# Date de compatibilité du runtime Workers (fige le comportement de l'API)
+compatibility_date = "2024-09-23"
+
+# Active les API Node.js compatibles dans les Pages Functions (utile pour
+# certains modules : crypto, buffer, etc.)
+compatibility_flags = ["nodejs_compat"]
+
+# Dossier de sortie du build front (généré par `npm run build`).
+# Wrangler ne déploie QUE le contenu de ce dossier comme assets statiques.
+pages_build_output_dir = "dist"
+
+
+# =============================================================================
+#  BASE DE DONNÉES D1 (SQLite serverless)
+# --------------------------------------------- -------
+#  Configuration actuelle : Utilise UNIQUEMENT la BD DISTANTE en production
+#  Aucune BD locale SQLite n'est utilisée (pas de .wrangler/state/d1/)
+#
+#  En local, l'app se connecte à la BD de production Cloudflare D1.
+#  Les appels locaux (npm run dev) utilisent --remote par défaut.
+#
+#  Le binding "DB" est accessible dans les Functions via `context.env.DB`
+#  (voir functions/api/_utils.js -> getDb()).
+# =============================================================================
+[[d1_databases]]
+binding = "DB"
+database_name = "eventflow-db"
+database_id = "a228b653-d77a-4b47-9413-8e7de683fd0a"    # ⚠️ BD de production (utilisée partout)
+
+
+# =============================================================================
+#  VARIABLES D'ENVIRONNEMENT (non sensibles)
+# -----------------------------------------------------------------------------
+#  Les valeurs sensibles (clés API, secrets) doivent être ajoutées via :
+#     npx wrangler pages secret put NOM_DU_SECRET
+#  ou dans le dashboard : Settings → Environment variables (chiffrées).
+# =============================================================================
+[vars]
+APP_NAME = "EventFlow Pro"
+APP_ENV = "production"
+
+
+# =============================================================================
+#  ENVIRONNEMENT DE PRÉVISUALISATION (preview)
+# -----------------------------------------------------------------------------
+#  Cloudflare Pages crée des déploiements "preview" pour les branches non-prod.
+#  On peut y associer une base D1 distincte pour ne pas polluer la production.
+# =============================================================================
+[env.preview]
+vars = { APP_ENV = "preview" }
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "eventflow-db-preview"
+database_id = "c43f1682-5c40-4d14-82a9-0edaf99369db"   # ⚠️ ID de la base preview

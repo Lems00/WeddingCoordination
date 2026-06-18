@@ -1,0 +1,18 @@
+# =============================================================================
+#  .dev.vars.example — Variables/secrets pour le développement local
+# -----------------------------------------------------------------------------
+#  Copiez ce fichier en `.dev.vars` (sans .example) pour le dev local avec :
+#     npx wrangler pages dev dist
+#
+#  ⚠️  Ne JAMAIS committer `.dev.vars` (contient des secrets).
+#      En production, utilisez :  npx wrangler pages secret put NOM
+# =============================================================================
+
+# Secret de signature des JWT (auth). OBLIGATOIRE en production.
+# Générez une valeur aléatoire forte, ex. : openssl rand -base64 48
+JWT_SECRET="votre-cle-secrete-locale-a-changer"
+
+# Origine autorisée pour CORS. En prod, pinnez le domaine du SPA, ex. :
+#   ALLOWED_ORIGIN="https://eventflow.pages.dev"
+# En local, laissez vide : le middleware reflète l'origine de la requête.
+# ALLOWED_ORIGIN=""

@@ -1,0 +1,167 @@
+[
+  {
+    "results": [
+      {
+        "id": "exp_1",
+        "project_id": "proj_ny_andry_2026",
+        "vendor_id": null,
+        "label": "Acompte traiteur",
+        "category": "Prestataires",
+        "amount": 400000,
+        "date": "2026-03-15",
+        "paid": 1,
+        "invoice_ref": null,
+        "notes": null,
+        "created_at": "2026-06-13 05:24:10"
+      },
+      {
+        "id": "exp_2",
+        "project_id": "proj_ny_andry_2026",
+        "vendor_id": null,
+        "label": "Acompte orchestre",
+        "category": "Prestataires",
+        "amount": 1000000,
+        "date": "2026-02-01",
+        "paid": 0,
+        "invoice_ref": null,
+        "notes": null,
+        "created_at": "2026-06-13 05:24:10"
+      },
+      {
+        "id": "exp_3",
+        "project_id": "proj_ny_andry_2026",
+        "vendor_id": null,
+        "label": "Vidéo/photo",
+        "category": "Prestataires",
+        "amount": 2100000,
+        "date": "2026-03-01",
+        "paid": 0,
+        "invoice_ref": null,
+        "notes": null,
+        "created_at": "2026-06-13 05:24:10"
+      },
+      {
+        "id": "exp_4",
+        "project_id": "proj_ny_andry_2026",
+        "vendor_id": null,
+        "label": "Acompte décoration",
+        "category": "Prestataires",
+        "amount": 200000,
+        "date": "2026-04-01",
+        "paid": 0,
+        "invoice_ref": null,
+        "notes": null,
+        "created_at": "2026-06-13 05:24:10"
+      },
+      {
+        "id": "exp_5",
+        "project_id": "proj_ny_andry_2026",
+        "vendor_id": null,
+        "label": "Acompte son/lumières",
+        "category": "Prestataires",
+        "amount": 900000,
+        "date": "2026-02-15",
+        "paid": 0,
+        "invoice_ref": null,
+        "notes": null,
+        "created_at": "2026-06-13 05:24:10"
+      },
+      {
+        "id": "exp_6",
+        "project_id": "proj_ny_andry_2026",
+        "vendor_id": null,
+        "label": "Pièce montée (gâteau)",
+        "category": "Gâteaux",
+        "amount": 500000,
+        "date": "2026-06-16",
+        "paid": 0,
+        "invoice_ref": null,
+        "notes": null,
+        "created_at": "2026-06-13 05:24:10"
+      },
+      {
+        "id": "exp_7",
+        "project_id": "proj_ny_andry_2026",
+        "vendor_id": null,
+        "label": "Invitations",
+        "category": "Papeterie",
+        "amount": 350000,
+        "date": "2026-01-25",
+        "paid": 1,
+        "invoice_ref": null,
+        "notes": null,
+        "created_at": "2026-06-13 05:24:10"
+      },
+      {
+        "id": "exp_8",
+        "project_id": "proj_ny_andry_2026",
+        "vendor_id": null,
+        "label": "Location tables hautes",
+        "category": "Logistique",
+        "amount": 400000,
+        "date": "2026-06-17",
+        "paid": 0,
+        "invoice_ref": null,
+        "notes": null,
+        "created_at": "2026-06-13 05:24:10"
+      },
+      {
+        "id": "exp_9",
+        "project_id": "proj_ny_andry_2026",
+        "vendor_id": null,
+        "label": "Location vaisselle",
+        "category": "Logistique",
+        "amount": 200000,
+        "date": "2026-06-17",
+        "paid": 0,
+        "invoice_ref": null,
+        "notes": null,
+        "created_at": "2026-06-13 05:24:10"
+      },
+      {
+        "id": "exp_10",
+        "project_id": "proj_ny_andry_2026",
+        "vendor_id": null,
+        "label": "Lanternes",
+        "category": "Décoration",
+        "amount": 250000,
+        "date": "2026-06-22",
+        "paid": 0,
+        "invoice_ref": null,
+        "notes": null,
+        "created_at": "2026-06-13 05:24:10"
+      },
+      {
+        "id": "e_1781491500626",
+        "project_id": "proj_ny_andry_2026",
+        "vendor_id": null,
+        "label": "Paiement Transport",
+        "category": "Autres",
+        "amount": 200000,
+        "date": "2026-06-06",
+        "paid": 0,
+        "invoice_ref": null,
+        "notes": null,
+        "created_at": "2026-06-15 02:44:56"
+      }
+    ],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "CDG",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.267
+      },
+      "duration": 0.267,
+      "changes": 0,
+      "last_row_id": 0,
+      "changed_db": false,
+      "size_after": 249856,
+      "rows_read": 11,
+      "rows_written": 0,
+      "total_attempts": 1
+    }
+  }
+]

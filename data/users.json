@@ -1,0 +1,114 @@
+[
+  {
+    "results": [
+      {
+        "id": "sa_001",
+        "agency_id": null,
+        "username": "superadmin",
+        "password_hash": "pbkdf2$100000$tmFmH4N+/MiWKO2Qx0MhYw==$A0vtjEOPz/zkqLpI02YP6GCHuco5+6zrzYy5qamqG/0=",
+        "email": null,
+        "name": "Super Administrateur",
+        "role": "super_admin",
+        "color": "#7c3aed",
+        "theme": "blue",
+        "avatar_url": null,
+        "is_active": 1,
+        "created_at": "2026-06-13 05:24:10",
+        "updated_at": "2026-06-15 02:17:28"
+      },
+      {
+        "id": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+        "agency_id": "agency_lems_2026",
+        "username": "admin",
+        "password_hash": "pbkdf2$100000$2YgCBYZOKfuPPctwl5IHAw==$79p1UvZagM9QO6BIVuRM39acjK3uTEXQPs+xWG1l04U=",
+        "email": null,
+        "name": "Coordinateur (Lems)",
+        "role": "admin",
+        "color": "#4318FF",
+        "theme": "blue",
+        "avatar_url": null,
+        "is_active": 1,
+        "created_at": "2026-06-13 05:24:10",
+        "updated_at": "2026-06-15 11:46:46"
+      },
+      {
+        "id": "p_lem_003",
+        "agency_id": "agency_lems_2026",
+        "username": "assistante",
+        "password_hash": "Planner2026",
+        "email": null,
+        "name": "Koloina",
+        "role": "planner",
+        "color": "#f59e0b",
+        "theme": "light",
+        "avatar_url": null,
+        "is_active": 1,
+        "created_at": "2026-06-13 05:24:10",
+        "updated_at": "2026-06-15 02:30:07"
+      },
+      {
+        "id": "client_ny_001",
+        "agency_id": null,
+        "username": "marie",
+        "password_hash": "mariage2026",
+        "email": null,
+        "name": "Jenny (Mariée)",
+        "role": "client",
+        "color": "#ec4899",
+        "theme": "light",
+        "avatar_url": null,
+        "is_active": 1,
+        "created_at": "2026-06-13 05:24:10",
+        "updated_at": "2026-06-15 11:43:49"
+      },
+      {
+        "id": "client_nd_001",
+        "agency_id": null,
+        "username": "marie2",
+        "password_hash": "mariage2026",
+        "email": null,
+        "name": "Ny Andry (Marié)",
+        "role": "client",
+        "color": "#3b82f6",
+        "theme": "light",
+        "avatar_url": null,
+        "is_active": 1,
+        "created_at": "2026-06-13 05:24:10",
+        "updated_at": "2026-06-15 11:43:33"
+      },
+      {
+        "id": "u_1781520853282",
+        "agency_id": null,
+        "username": "Jenny",
+        "password_hash": "pbkdf2$100000$K1gRCqdhK86WyQDLQIyNDQ==$mmqU9Mu+qpXG3uAvNE32QbQ9SeBYxJ72hG4rQZbxtiQ=",
+        "email": null,
+        "name": "Jenny",
+        "role": "admin",
+        "color": "#4318FF",
+        "theme": "emerald",
+        "avatar_url": null,
+        "is_active": 1,
+        "created_at": "2026-06-15 10:54:14",
+        "updated_at": "2026-06-15 11:45:23"
+      }
+    ],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "CDG",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1465
+      },
+      "duration": 0.1465,
+      "changes": 0,
+      "last_row_id": 0,
+      "changed_db": false,
+      "size_after": 249856,
+      "rows_read": 6,
+      "rows_written": 0,
+      "total_attempts": 1
+    }
+  }
+]

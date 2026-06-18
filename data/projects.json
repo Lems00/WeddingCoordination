@@ -1,0 +1,39 @@
+[
+  {
+    "results": [
+      {
+        "id": "proj_ny_andry_2026",
+        "agency_id": "agency_lems_2026",
+        "name": "Mariage Ny & Andry",
+        "couple": "Ny Andry & Jenny",
+        "date": "2026-07-16",
+        "venue": "Le Conservatoire",
+        "status": "en_cours",
+        "color": "#4318FF",
+        "budget": 27000000,
+        "currency": "MGA",
+        "notes": "Événement religieux + réception. Vodiondry le 15 juillet. Budget COMPLET avec tous prestataires.",
+        "created_at": "2026-06-13 05:24:10",
+        "updated_at": "2026-06-15 02:55:55"
+      }
+    ],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "CDG",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.2326
+      },
+      "duration": 0.2326,
+      "changes": 0,
+      "last_row_id": 0,
+      "changed_db": false,
+      "size_after": 249856,
+      "rows_read": 1,
+      "rows_written": 0,
+      "total_attempts": 1
+    }
+  }
+]

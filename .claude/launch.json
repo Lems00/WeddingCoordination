@@ -1,0 +1,34 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Vite Dev Server",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 5173,
+      "autoPort": true,
+      "description": "Hot-reload development server (React + Vite + Tailwind)"
+    },
+    {
+      "name": "Vite Preview Server",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "preview"],
+      "port": 4040,
+      "description": "Production build preview (similar to deployed app)"
+    },
+    {
+      "name": "Static Server (serve-local)",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["serve-local.mjs"],
+      "port": 4040,
+      "description": "Minimal static file server for dist/ (zero dependencies)"
+    },
+    {
+      "name": "Wrangler Pages Dev (Cloudflare)",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["wrangler", "pages", "dev", "dist", "--remote"],
+      "port": 8787,
+      "description": "Cloudflare Pages Functions + D1 database (requires dist/ build)"
+    }
+  ]
+}

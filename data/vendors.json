@@ -1,0 +1,120 @@
+[
+  {
+    "results": [
+      {
+        "id": "vendor_1",
+        "project_id": "proj_ny_andry_2026",
+        "name": "Album Music",
+        "role": "Orchestre",
+        "scope": "Cérémonie religieuse + cocktail",
+        "color": "#05CD99",
+        "statut": "confirme",
+        "contact_name": "Marc Durand",
+        "contact_phone": null,
+        "contact_email": "marc@albummusic.com",
+        "quote_amount": 12500000,
+        "paid_amount": 0,
+        "notes": null,
+        "created_at": "2026-06-13 05:24:10"
+      },
+      {
+        "id": "vendor_2",
+        "project_id": "proj_ny_andry_2026",
+        "name": "Mama",
+        "role": "Traiteur",
+        "scope": null,
+        "color": "#EE5D50",
+        "statut": "confirme",
+        "contact_name": null,
+        "contact_phone": null,
+        "contact_email": null,
+        "quote_amount": null,
+        "paid_amount": 0,
+        "notes": null,
+        "created_at": "2026-06-13 05:24:10"
+      },
+      {
+        "id": "vendor_3",
+        "project_id": "proj_ny_andry_2026",
+        "name": "Mi Rec Studio",
+        "role": "Vidéo & Photo",
+        "scope": "Reportage complet jour J + écrans",
+        "color": "#4318FF",
+        "statut": "confirme",
+        "contact_name": "Pierre Dupont",
+        "contact_phone": null,
+        "contact_email": "pierre@mirec.mg",
+        "quote_amount": 25000000,
+        "paid_amount": 0,
+        "notes": null,
+        "created_at": "2026-06-13 05:24:10"
+      },
+      {
+        "id": "vendor_4",
+        "project_id": "proj_ny_andry_2026",
+        "name": "Jennya Décor",
+        "role": "Décoration",
+        "scope": "Décoration salle + fleurs",
+        "color": "#7551FF",
+        "statut": "confirme",
+        "contact_name": "Nadia Leblanc",
+        "contact_phone": null,
+        "contact_email": "nadia@jennya.mg",
+        "quote_amount": 15000000,
+        "paid_amount": 0,
+        "notes": null,
+        "created_at": "2026-06-13 05:24:10"
+      },
+      {
+        "id": "vendor_5",
+        "project_id": "proj_ny_andry_2026",
+        "name": "MRE Son",
+        "role": "Son & Éclairage",
+        "scope": "Son 3 cérémonies + lumières",
+        "color": "#FF6B6B",
+        "statut": "confirme",
+        "contact_name": "Christophe Martin",
+        "contact_phone": null,
+        "contact_email": "contact@mre.mg",
+        "quote_amount": 18000000,
+        "paid_amount": 0,
+        "notes": null,
+        "created_at": "2026-06-13 05:24:10"
+      },
+      {
+        "id": "v_1781488904165",
+        "project_id": "proj_ny_andry_2026",
+        "name": "Saprkular",
+        "role": "Orchestre",
+        "scope": null,
+        "color": "#1aa7ff",
+        "statut": "confirme",
+        "contact_name": null,
+        "contact_phone": null,
+        "contact_email": null,
+        "quote_amount": null,
+        "paid_amount": 0,
+        "notes": null,
+        "created_at": "2026-06-15 02:01:39"
+      }
+    ],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "CDG",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.2588
+      },
+      "duration": 0.2588,
+      "changes": 0,
+      "last_row_id": 0,
+      "changed_db": false,
+      "size_after": 249856,
+      "rows_read": 6,
+      "rows_written": 0,
+      "total_attempts": 1
+    }
+  }
+]

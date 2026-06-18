@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "description": "EventFlow Pro — Cloudflare Pages routing",
+  "include": [
+    "/api/*"
+  ],
+  "exclude": [
+    "/static/*",
+    "/favicon.ico",
+    "/robots.txt"
+  ]
+}

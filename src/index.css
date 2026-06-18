@@ -1,0 +1,323 @@
+@import "tailwindcss";
+
+@layer components {
+  .input {
+    @apply w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white;
+  }
+}
+
+/* =============================================================================
+   THEMES
+   Variables CSS par thème. Les composants utilisent bg-(--bg-main) etc.
+   ========================================================================== */
+
+/* ---------- Light (default) ---------- */
+:root,
+body.theme-light {
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-elevated: #f1f5f9;
+  --bg-muted: #f8fafc;
+  --bg-sidebar: #0f172a;
+  --bg-sidebar-hover: #1e293b;
+  --bg-input: #ffffff;
+  --bg-kanban: #f1f5f9;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-inverse: #ffffff;
+  --text-sidebar: #e2e8f0;
+  --text-sidebar-muted: #94a3b8;
+
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --border-sidebar: rgba(255, 255, 255, 0.08);
+
+  --accent: #4318ff;
+  --accent-2: #7c3aed;
+  --accent-fg: #ffffff;
+}
+
+/* ---------- Night ---------- */
+body.theme-night {
+  --bg-main: #0b1120;
+  --bg-card: #131a2b;
+  --bg-elevated: #1a2238;
+  --bg-muted: #0f1628;
+  --bg-sidebar: #05080f;
+  --bg-sidebar-hover: #0a1020;
+  --bg-input: #131a2b;
+  --bg-kanban: #0f1628;
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  --text-inverse: #0f172a;
+  --text-sidebar: #e2e8f0;
+  --text-sidebar-muted: #64748b;
+
+  --border: #1e293b;
+  --border-strong: #334155;
+  --border-sidebar: rgba(255, 255, 255, 0.06);
+
+  --accent: #22d3ee;
+  --accent-2: #3b82f6;
+  --accent-fg: #0f172a;
+}
+
+/* ---------- Graphite ---------- */
+body.theme-graphite {
+  --bg-main: #1e1f22;
+  --bg-card: #2a2b2f;
+  --bg-elevated: #34353a;
+  --bg-muted: #242529;
+  --bg-sidebar: #111214;
+  --bg-sidebar-hover: #1a1b1e;
+  --bg-input: #2a2b2f;
+  --bg-kanban: #242529;
+
+  --text-primary: #f5f5f4;
+  --text-secondary: #d6d3d1;
+  --text-muted: #78716c;
+  --text-inverse: #0f172a;
+  --text-sidebar: #e7e5e4;
+  --text-sidebar-muted: #78716c;
+
+  --border: #3f3f46;
+  --border-strong: #52525b;
+  --border-sidebar: rgba(255, 255, 255, 0.06);
+
+  --accent: #f97316;
+  --accent-2: #ef4444;
+  --accent-fg: #ffffff;
+}
+
+/* ---------- Blue (Ocean) ---------- */
+body.theme-blue {
+  --bg-main: #eff6ff;
+  --bg-card: #ffffff;
+  --bg-elevated: #dbeafe;
+  --bg-muted: #eff6ff;
+  --bg-sidebar: #1e3a8a;
+  --bg-sidebar-hover: #1e40af;
+  --bg-input: #ffffff;
+  --bg-kanban: #dbeafe;
+
+  --text-primary: #0c4a6e;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-inverse: #ffffff;
+  --text-sidebar: #e0f2fe;
+  --text-sidebar-muted: #93c5fd;
+
+  --border: #bfdbfe;
+  --border-strong: #93c5fd;
+  --border-sidebar: rgba(255, 255, 255, 0.1);
+
+  --accent: #2563eb;
+  --accent-2: #0ea5e9;
+  --accent-fg: #ffffff;
+}
+
+/* ---------- Rose ---------- */
+body.theme-rose {
+  --bg-main: #fff1f2;
+  --bg-card: #ffffff;
+  --bg-elevated: #ffe4e6;
+  --bg-muted: #fff1f2;
+  --bg-sidebar: #881337;
+  --bg-sidebar-hover: #9f1239;
+  --bg-input: #ffffff;
+  --bg-kanban: #ffe4e6;
+
+  --text-primary: #881337;
+  --text-secondary: #9f1239;
+  --text-muted: #f43f5e;
+  --text-inverse: #ffffff;
+  --text-sidebar: #fecdd3;
+  --text-sidebar-muted: #fda4af;
+
+  --border: #fecdd3;
+  --border-strong: #fda4af;
+  --border-sidebar: rgba(255, 255, 255, 0.1);
+
+  --accent: #e11d48;
+  --accent-2: #f43f5e;
+  --accent-fg: #ffffff;
+}
+
+/* ---------- Emerald ---------- */
+body.theme-emerald {
+  --bg-main: #f0fdf4;
+  --bg-card: #ffffff;
+  --bg-elevated: #dcfce7;
+  --bg-muted: #f0fdf4;
+  --bg-sidebar: #064e3b;
+  --bg-sidebar-hover: #065f46;
+  --bg-input: #ffffff;
+  --bg-kanban: #dcfce7;
+
+  --text-primary: #064e3b;
+  --text-secondary: #047857;
+  --text-muted: #10b981;
+  --text-inverse: #ffffff;
+  --text-sidebar: #d1fae5;
+  --text-sidebar-muted: #6ee7b7;
+
+  --border: #bbf7d0;
+  --border-strong: #86efac;
+  --border-sidebar: rgba(255, 255, 255, 0.1);
+
+  --accent: #059669;
+  --accent-2: #10b981;
+  --accent-fg: #ffffff;
+}
+
+/* ---------- Lavender ---------- */
+body.theme-lavender {
+  --bg-main: #faf5ff;
+  --bg-card: #ffffff;
+  --bg-elevated: #f3e8ff;
+  --bg-muted: #faf5ff;
+  --bg-sidebar: #4c1d95;
+  --bg-sidebar-hover: #5b21b6;
+  --bg-input: #ffffff;
+  --bg-kanban: #f3e8ff;
+
+  --text-primary: #4c1d95;
+  --text-secondary: #6d28d9;
+  --text-muted: #8b5cf6;
+  --text-inverse: #ffffff;
+  --text-sidebar: #ede9fe;
+  --text-sidebar-muted: #c4b5fd;
+
+  --border: #e9d5ff;
+  --border-strong: #d8b4fe;
+  --border-sidebar: rgba(255, 255, 255, 0.1);
+
+  --accent: #8b5cf6;
+  --accent-2: #a855f7;
+  --accent-fg: #ffffff;
+}
+
+/* =========================================================================
+   Global theme overrides
+   On surcharge les classes Tailwind standards pour que le thème sélectionné
+   s'applique partout sans avoir à modifier chaque composant.
+   ========================================================================= */
+body.theme-night,
+body.theme-graphite {
+  color-scheme: dark;
+}
+
+/* Backgrounds */
+body.theme-night .bg-white,
+body.theme-graphite .bg-white { background-color: var(--bg-card) !important; }
+
+body.theme-night .bg-slate-50,
+body.theme-graphite .bg-slate-50 { background-color: var(--bg-elevated) !important; }
+
+body.theme-night .bg-slate-100,
+body.theme-graphite .bg-slate-100 { background-color: var(--bg-kanban) !important; }
+
+body.theme-night .bg-slate-50\/50,
+body.theme-graphite .bg-slate-50\/50 { background-color: var(--bg-elevated) !important; }
+
+body.theme-night .bg-indigo-50,
+body.theme-graphite .bg-indigo-50 { background-color: color-mix(in srgb, var(--accent) 15%, var(--bg-card)) !important; }
+
+body.theme-night .bg-emerald-50,
+body.theme-graphite .bg-emerald-50 { background-color: color-mix(in srgb, #10b981 15%, var(--bg-card)) !important; }
+
+body.theme-night .bg-amber-50,
+body.theme-graphite .bg-amber-50 { background-color: color-mix(in srgb, #f59e0b 15%, var(--bg-card)) !important; }
+
+body.theme-night .bg-rose-50,
+body.theme-graphite .bg-rose-50 { background-color: color-mix(in srgb, #f43f5e 15%, var(--bg-card)) !important; }
+
+/* Text colors */
+body.theme-night .text-slate-900,
+body.theme-graphite .text-slate-900,
+body.theme-night .text-slate-800,
+body.theme-graphite .text-slate-800 { color: var(--text-primary) !important; }
+
+body.theme-night .text-slate-700,
+body.theme-graphite .text-slate-700,
+body.theme-night .text-slate-600,
+body.theme-graphite .text-slate-600 { color: var(--text-secondary) !important; }
+
+body.theme-night .text-slate-500,
+body.theme-graphite .text-slate-500,
+body.theme-night .text-slate-400,
+body.theme-graphite .text-slate-400 { color: var(--text-muted) !important; }
+
+/* Borders */
+body.theme-night .border-slate-100,
+body.theme-graphite .border-slate-100,
+body.theme-night .border-slate-200,
+body.theme-graphite .border-slate-200 { border-color: var(--border) !important; }
+
+/* Inputs (dark themes) */
+body.theme-night .input,
+body.theme-graphite .input {
+  background-color: var(--bg-input) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+body.theme-night input::placeholder,
+body.theme-graphite input::placeholder { color: var(--text-muted) !important; }
+
+/* Themed backgrounds (colored themes) */
+body.theme-blue .bg-white,
+body.theme-rose .bg-white,
+body.theme-emerald .bg-white,
+body.theme-lavender .bg-white { background-color: var(--bg-card) !important; }
+
+body.theme-blue .bg-slate-50,
+body.theme-rose .bg-slate-50,
+body.theme-emerald .bg-slate-50,
+body.theme-lavender .bg-slate-50 { background-color: var(--bg-elevated) !important; }
+
+body.theme-blue .bg-slate-100,
+body.theme-rose .bg-slate-100,
+body.theme-emerald .bg-slate-100,
+body.theme-lavender .bg-slate-100 { background-color: var(--bg-elevated) !important; }
+
+body.theme-blue .bg-indigo-50,
+body.theme-blue .bg-indigo-100 { background-color: color-mix(in srgb, var(--accent) 15%, white) !important; color: var(--accent) !important; }
+
+body.theme-rose .bg-rose-50,
+body.theme-rose .bg-pink-50 { background-color: color-mix(in srgb, var(--accent) 15%, white) !important; }
+
+body.theme-emerald .bg-emerald-50 { background-color: color-mix(in srgb, var(--accent) 15%, white) !important; }
+
+body.theme-lavender .bg-violet-50,
+body.theme-lavender .bg-purple-50 { background-color: color-mix(in srgb, var(--accent) 15%, white) !important; }
+
+/* Gradient buttons inherit theme accent */
+body.theme-blue .from-indigo-600,
+body.theme-blue .bg-indigo-600,
+body.theme-blue .ring-indigo-500 { --tw-gradient-from: var(--accent) !important; background-color: var(--accent) !important; }
+
+body.theme-rose .from-indigo-600,
+body.theme-rose .bg-indigo-600 { background-color: var(--accent) !important; --tw-gradient-from: var(--accent) !important; }
+
+body.theme-emerald .from-indigo-600,
+body.theme-emerald .bg-indigo-600 { background-color: var(--accent) !important; --tw-gradient-from: var(--accent) !important; }
+
+body.theme-lavender .from-indigo-600,
+body.theme-lavender .bg-indigo-600 { background-color: var(--accent) !important; --tw-gradient-from: var(--accent) !important; }
+
+body.theme-graphite .from-indigo-600,
+body.theme-graphite .bg-indigo-600 { background-color: var(--accent) !important; --tw-gradient-from: var(--accent) !important; }
+
+/* Focus rings */
+body.theme-blue .focus\:ring-indigo-500:focus,
+body.theme-rose .focus\:ring-indigo-500:focus,
+body.theme-emerald .focus\:ring-indigo-500:focus,
+body.theme-lavender .focus\:ring-indigo-500:focus,
+body.theme-graphite .focus\:ring-indigo-500:focus { --tw-ring-color: var(--accent) !important; }
+
+body.theme-night .focus\:ring-indigo-500:focus { --tw-ring-color: var(--accent) !important; }

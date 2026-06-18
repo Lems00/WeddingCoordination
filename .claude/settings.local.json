@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(npm run build 2>&1)",
+      "Bash(npm run *)",
+      "Bash(Start-Sleep -Seconds 10)",
+      "Bash(curl -s http://localhost:4040)",
+      "mcp__Claude_in_Chrome__navigate",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(node scripts/convert-to-seed.js)",
+      "Bash(npx wrangler *)"
+    ]
+  }
+}
