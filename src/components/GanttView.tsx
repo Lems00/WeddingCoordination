@@ -227,8 +227,8 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
       )}
 
       {/* Single scrollable container for header + tasks */}
-      {/* pb-14 pour laisser la place au scrollbar horizontal + légende fixée */}
-      <div className="flex-1 overflow-auto pb-14">
+      {/* Scrollbar horizontal visible juste au-dessus de la légende fixée */}
+      <div className="flex-1 overflow-auto">
         <div style={{ minWidth: "100%" }}>
           {/* Timeline header row — sticky top */}
           <div className="sticky top-0 z-30 flex" style={{ height: HEAD_H }}>
