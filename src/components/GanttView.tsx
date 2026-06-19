@@ -227,8 +227,8 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
       )}
 
       {/* Single scrollable container for header + tasks */}
-      {/* Scrollbars permanents: vertical + horizontal toujours visibles */}
-      <div className="flex-1 pb-12" style={{ overflowY: "scroll", overflowX: "scroll", scrollBehavior: "smooth" }}>
+      {/* Fidèle au Revamp: overflow-auto avec les deux scrollbars visibles */}
+      <div className="flex-1 overflow-auto pb-12" style={{ scrollBehavior: "smooth" }}>
         <div style={{ minWidth: "100%" }}>
           {/* Timeline header row — sticky top */}
           <div className="sticky top-0 z-30 flex" style={{ height: HEAD_H }}>
