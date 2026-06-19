@@ -13,7 +13,8 @@
       "name": "Vite Preview Server",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "preview"],
-      "port": 4040,
+      "port": 4173,
+      "autoPort": true,
       "description": "Production build preview (similar to deployed app)"
     },
     {
@@ -21,6 +22,7 @@
       "runtimeExecutable": "node",
       "runtimeArgs": ["serve-local.mjs"],
       "port": 4040,
+      "autoPort": true,
       "description": "Minimal static file server for dist/ (zero dependencies)"
     },
     {
