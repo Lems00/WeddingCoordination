@@ -18,7 +18,7 @@ import { getResponsibleName, getAssigneeStyle, PHASES } from "../data";
 
 type GanttZoom = "jour" | "semaine" | "mois";
 
-const SIDEBAR_W = 268;
+const SIDEBAR_W = 240;
 const ROW_H = 46;
 const HEAD_H = 60;
 const PHASE_H = 38;
@@ -381,8 +381,9 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                           >
                             {assignee && (
                               <span
-                                className="shrink-0 flex items-center justify-center rounded-full text-[9px] font-bold text-white"
+                                className="shrink-0 flex items-center justify-center rounded-full text-[9px] font-bold text-white cursor-help"
                                 style={{ width: 16, height: 16, backgroundColor: assignee.color, flexShrink: 0 }}
+                                title={responsibleName || "Responsable"}
                               >
                                 {assignee.code}
                               </span>
