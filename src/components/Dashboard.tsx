@@ -31,7 +31,7 @@ export default function Dashboard() {
   const blockedTasks = tasks.filter((t) => t.status === "Bloqué").length;
   const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-  const totalBudget = project.budget;
+  const totalBudget = project.budget ?? 0;
   const committed = expenses.reduce((s, e) => s + e.amount, 0);
   const remaining = totalBudget - committed;
 

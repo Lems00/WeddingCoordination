@@ -16,9 +16,4 @@ export default defineConfig({
     globals: true,
     include: ["src/**/*.test.{ts,tsx,js}", "functions/**/*.test.js"],
   },
-export default {
-  build: {
-    manifest: true
-  }
-}
 });

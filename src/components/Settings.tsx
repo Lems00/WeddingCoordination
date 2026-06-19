@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useApp } from "../store";
 import { THEMES, ThemeId } from "../themes";
 import { cn } from "../utils/cn";
-import { Palette, User, Shield, LogOut, Heart, Check, Lock, AlertCircle, X } from "lucide-react";
+import { Palette, User, Shield, LogOut, Heart, Check, Lock, X } from "lucide-react";
 
 export default function Settings() {
   const { currentUser, setUserTheme, updateUser } = useApp();

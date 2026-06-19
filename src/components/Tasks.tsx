@@ -20,10 +20,7 @@ import {
   KanbanSquare,
   BarChart3,
   GripVertical,
-  Users,
   MoreVertical,
-  ChevronDown,
-  ChevronUp,
 } from "lucide-react";
 
 type ViewMode = "list" | "kanban" | "gantt";
@@ -58,17 +55,6 @@ export default function Tasks() {
     });
     return groups;
   }, [filtered]);
-
-  // Légende des codes couleur de l'équipe assignée (uniques dans les tâches courantes)
-  const assigneeLegend = useMemo(() => {
-    const map = new Map<string, ReturnType<typeof getAssigneeStyle>>();
-    tasks.forEach((t) => {
-      const responsibleName = getTaskResponsible(t, users);
-      const s = getAssigneeStyle(responsibleName);
-      if (!map.has(s.label)) map.set(s.label, s);
-    });
-    return Array.from(map.values());
-  }, [tasks, users]);
 
   const cycleStatus = (t: Task) => {
     if (!canEdit) return;
@@ -188,7 +174,7 @@ export default function Tasks() {
           filtered={filtered}
         />
       ) : (
-        <GanttView tasks={filtered} users={users} currentProject={currentProject} />
+        <GanttView tasks={filtered} users={users} currentProject={currentProject ?? undefined} />
       )}
 
       {showAddModal && canEdit && (
@@ -334,7 +320,7 @@ function KanbanView({
 // ============================================================================
 
 function ListView({
-  groupedTasks, canEdit, users, editingTask, onSetEditingTask, onCycleStatus, onUpdate, onDelete, phaseFilter, filtered,
+  groupedTasks, canEdit, users, onSetEditingTask, onCycleStatus, onDelete, phaseFilter, filtered,
 }: {
   groupedTasks: Record<string, Task[]>;
   canEdit: boolean;
