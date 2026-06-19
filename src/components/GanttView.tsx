@@ -2,9 +2,8 @@ import { useState, useMemo } from "react";
 import { Task, TaskStatus } from "../data";
 import { User } from "../store";
 import { cn } from "../utils/cn";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, CheckCircle2, Clock, AlertCircle, Circle } from "lucide-react";
 import {
-  getTimelineConstants,
   addDays,
   getDayStarts,
   getMonthStarts,
@@ -13,10 +12,6 @@ import {
   monthLabel,
   weekLabel,
   isWeekend,
-  getTaskStatusColor,
-  getTaskStatusBgClass,
-  calculatePosition,
-  getPhaseColor,
   getDateRangeFromTasks,
 } from "../utils/ganttHelpers";
 import { getResponsibleName, getAssigneeStyle, PHASES } from "../data";
@@ -33,6 +28,30 @@ interface GanttViewProps {
   users: User[];
   currentProject?: { date?: string };
 }
+
+// ─── Metadata for phases ──────────────────────────────────────────────────────
+const PHASE_META: Record<string, { color: string; accent: string }> = {
+  "Préparation": { color: "#A78BFA", accent: "#7C3AED" },
+  "Veille": { color: "#F472B6", accent: "#DB2777" },
+  "Jour J": { color: "#FB923C", accent: "#EA580C" },
+};
+
+// ─── Metadata for task status ──────────────────────────────────────────────────
+type RevampStatus = "done" | "in-progress" | "pending" | "delayed";
+
+const STATUS_META: Record<TaskStatus, { icon: typeof CheckCircle2; color: string; label: string }> = {
+  "Terminé": { icon: CheckCircle2, color: "#34D399", label: "Terminé" },
+  "En cours": { icon: Clock, color: "#818CF8", label: "En cours" },
+  "À faire": { icon: Circle, color: "#475569", label: "À faire" },
+  "Bloqué": { icon: AlertCircle, color: "#F59E0B", label: "Bloqué" },
+};
+
+// ─── Color assignee badges ────────────────────────────────────────────────────
+const ASSIGNEE_COLORS: Record<string, string> = {
+  "C": "#10B981",  // Coordinateur
+  "M": "#C084FC",  // Mariée/Marié
+  "A": "#FB923C",  // Autre
+};
 
 export default function GanttView({ tasks, users, currentProject }: GanttViewProps) {
   const [view, setView] = useState<GanttZoom>("semaine");
@@ -82,12 +101,12 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
 
   // Position calculator
   const px = (date: Date): number => {
-    return calculatePosition(date, timelineStart, timelineEnd);
+    const offsetMs = date.getTime() - timelineStart.getTime();
+    const totalMs = timelineEnd.getTime() - timelineStart.getTime();
+    return (offsetMs / totalMs) * 100;
   };
 
   const todayX = px(TODAY);
-  // Weekends always visible (not just in jour view)
-  const isWkEnd = true;
 
   // Toggle phase collapse
   const togglePhase = (p: string) => {
@@ -115,15 +134,30 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
     return t <= TODAY && addDays(t, 7) > TODAY;
   };
 
+  // Count tasks by status for header
+  const counts = {
+    done: tasks.filter(t => t.status === "Terminé").length,
+    inProgress: tasks.filter(t => t.status === "En cours").length,
+    delayed: tasks.filter(t => t.status === "Bloqué").length,
+    pending: tasks.filter(t => t.status === "À faire").length,
+  };
+
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col h-full">
       {/* Header */}
       <div className="px-5 py-3 border-b border-slate-100 flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="font-semibold text-slate-900 flex items-center gap-2">Diagramme de Gantt</h2>
+          <h2 className="font-semibold text-slate-900">Diagramme de Gantt</h2>
           <p className="text-sm text-slate-500">Chronologie visuelle des tâches</p>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
+          {/* Today indicator */}
+          <div className="flex items-center gap-1.5 text-xs text-slate-600">
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+            Aujourd'hui — {TODAY.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+          </div>
+
+          {/* View switcher */}
           <div className="flex rounded-lg border border-slate-200 overflow-hidden">
             {(["Jour", "Semaine", "Mois"] as const).map((v) => (
               <button
@@ -208,16 +242,15 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
             {/* Timeline header */}
             <div className="relative border-b border-slate-100 bg-white flex-1">
               {/* Weekend shading */}
-              {isWkEnd &&
-                ticks
-                  .filter((t) => isWeekend(t))
-                  .map((t, i) => (
-                    <div
-                      key={i}
-                      className="absolute top-0 bottom-0 bg-slate-50"
-                      style={{ left: `${px(t)}%`, width: percentPerPeriod + "%" }}
-                    />
-                  ))}
+              {ticks
+                .filter((t) => isWeekend(t))
+                .map((t, i) => (
+                  <div
+                    key={i}
+                    className="absolute top-0 bottom-0 bg-slate-50"
+                    style={{ left: `${px(t)}%`, width: percentPerPeriod + "%" }}
+                  />
+                ))}
 
               {/* Tick marks and labels */}
               {ticks.map((tick, i) => {
@@ -245,8 +278,8 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
             const phaseTasks = groupedByPhase[phase];
             if (phaseTasks.length === 0) return null;
 
-            const isCollapsed = collapsed.has(phase);
-            const phaseColor = getPhaseColor(phase);
+            const isCollapsedPhase = collapsed.has(phase);
+            const phaseColor = PHASE_META[phase]?.color || "#A78BFA";
 
             return (
               <div key={phase}>
@@ -260,7 +293,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                       onClick={() => togglePhase(phase)}
                       className="w-full flex items-center gap-2 px-4 h-full hover:bg-slate-100 transition"
                     >
-                      {isCollapsed ? (
+                      {isCollapsedPhase ? (
                         <ChevronRight size={14} className="text-slate-700" />
                       ) : (
                         <ChevronDown size={14} className="text-slate-700" />
@@ -288,13 +321,15 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                 </div>
 
                 {/* Task rows */}
-                {!isCollapsed &&
+                {!isCollapsedPhase &&
                   phaseTasks.map((task) => {
                     const barX = px(new Date(task.start_date));
-                    const barW = Math.max(px(new Date(task.end_date)) - barX, 4);
+                    const barW = Math.max(px(new Date(task.end_date)) - barX, 6);
                     const isH = hovered === task.id;
                     const responsibleName = getResponsibleName(task.responsible_user_id, users);
                     const assignee = getAssigneeStyle(responsibleName);
+                    const sm = STATUS_META[task.status];
+                    const StatusIcon = sm.icon;
                     const isDimmed = task.status === "À faire" || task.status === "Bloqué";
 
                     return (
@@ -308,58 +343,77 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                         {/* Task info sidebar */}
                         <div
                           className={cn(
-                            "sticky left-0 z-20 border-r border-slate-100 flex items-center gap-2 px-4 transition",
+                            "sticky left-0 z-20 border-r border-slate-100 flex items-center gap-2.5 px-4 transition",
                             isH ? "bg-slate-50" : "bg-white"
                           )}
                           style={{ width: SIDEBAR_W, minWidth: SIDEBAR_W }}
                         >
-                          <div className="flex-1 min-w-0">
-                            <div className="text-[10px] font-mono font-bold text-slate-600">{task.id}</div>
-                            <div className="text-xs text-slate-700 truncate">{task.task}</div>
-                          </div>
+                          <span
+                            className="text-[9px] shrink-0 w-6 text-right font-mono font-bold"
+                            style={{ color: phaseColor + "80" }}
+                          >
+                            {task.id}
+                          </span>
+                          <StatusIcon size={11} style={{ color: sm.color }} className="shrink-0" />
+                          <span className={cn("text-[11px] truncate transition", isH ? "text-slate-800 font-medium" : "text-slate-700")}>
+                            {task.task}
+                          </span>
                         </div>
 
                         {/* Timeline cell with task bar */}
                         <div className="relative flex-1 bg-white">
-                          {/* Grid background */}
-                          {isWkEnd &&
-                            ticks
-                              .filter((t) => isWeekend(t))
-                              .map((t, i) => (
-                                <div
-                                  key={i}
-                                  className="absolute top-0 bottom-0 bg-white/50"
-                                  style={{ left: `${px(t)}%`, width: percentPerPeriod + "%" }}
-                                />
-                              ))}
+                          {/* Weekend shading */}
+                          {ticks
+                            .filter((t) => isWeekend(t))
+                            .map((t, i) => (
+                              <div
+                                key={i}
+                                className="absolute top-0 bottom-0 bg-slate-50/50"
+                                style={{ left: `${px(t)}%`, width: percentPerPeriod + "%" }}
+                              />
+                            ))}
                           {ticks.map((t, i) => (
                             <div key={i} className="absolute top-0 bottom-0 w-px bg-slate-100" style={{ left: `${px(t)}%` }} />
                           ))}
 
                           {/* Task bar */}
                           <div
-                            className={cn(
-                              "absolute top-1.5 bottom-1.5 rounded-full shadow-sm flex items-center gap-1.5 px-2 text-white text-[10px] font-medium overflow-hidden whitespace-nowrap hover:shadow-md transition cursor-pointer",
-                              getTaskStatusBgClass(task.status)
-                            )}
+                            className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1.5 overflow-hidden rounded-full shadow-sm transition-all duration-150"
                             style={{
                               left: `${barX}%`,
                               width: `${barW}%`,
-                              opacity: isDimmed ? 0.5 : 1,
+                              height: 26,
+                              backgroundColor: sm.color,
+                              opacity: isDimmed ? 0.3 : 0.88,
+                              paddingLeft: 6,
+                              paddingRight: 8,
+                              boxShadow: isH && !isDimmed
+                                ? `0 0 0 1px ${sm.color}60, 0 4px 20px ${sm.color}35`
+                                : "none",
                             }}
-                            title={`${task.id} — ${task.task} (${task.status})`}
                           >
-                            {barW > 30 && (
+                            {assignee && (
                               <span
-                                className="w-4 h-4 rounded-full flex items-center justify-center text-[7px] font-bold flex-shrink-0 ring-1 ring-white/40"
-                                style={{ backgroundColor: assignee.color }}
+                                className="shrink-0 flex items-center justify-center rounded-full text-[9px] font-bold text-white"
+                                style={{ width: 16, height: 16, backgroundColor: assignee.color, flexShrink: 0 }}
                               >
                                 {assignee.code}
                               </span>
                             )}
-                            {barW > 60 && <span className="truncate text-[9px]">{responsibleName}</span>}
-                            {task.status === "Terminé" && barW > 50 && <span className="ml-auto text-[9px]">✓</span>}
+                            {barW > 90 && responsibleName && (
+                              <span className="text-[10px] text-white/75 truncate font-medium leading-none">
+                                {responsibleName}
+                              </span>
+                            )}
+                            {task.status === "Terminé" && barW > 50 && (
+                              <span className="ml-auto text-[10px] text-white/40 shrink-0">✓</span>
+                            )}
                           </div>
+
+                          {/* Today line */}
+                          {TODAY >= timelineStart && TODAY <= timelineEnd && (
+                            <div className="absolute top-0 bottom-0 w-px z-10" style={{ left: `${todayX}%`, backgroundColor: "rgba(239,68,68,0.28)" }} />
+                          )}
                         </div>
                       </div>
                     );
@@ -367,28 +421,31 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
               </div>
             );
           })}
+
+          {/* Bottom padding */}
+          <div className="flex" style={{ height: 48 }}>
+            <div className="sticky left-0 bg-white border-r border-slate-100" style={{ width: SIDEBAR_W, minWidth: SIDEBAR_W }} />
+            <div className="relative" style={{ width: "100%" }}>
+              {ticks.map((t, i) => (
+                <div key={i} className="absolute top-0 bottom-0 w-px bg-slate-100" style={{ left: `${px(t)}%` }} />
+              ))}
+              {TODAY >= timelineStart && TODAY <= timelineEnd && (
+                <div className="absolute top-0 bottom-0 w-px bg-red-500/20" style={{ left: `${todayX}%` }} />
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Legend */}
       <div className="shrink-0 flex items-center gap-5 px-5 py-2.5 border-t border-slate-100 bg-white text-[10px] text-slate-600">
         <span className="uppercase tracking-widest font-semibold text-slate-700">Légende</span>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded bg-slate-400" />
-          À faire
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded bg-blue-500" />
-          En cours
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded bg-emerald-500" />
-          Terminé
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded bg-red-500" />
-          Bloqué
-        </div>
+        {(Object.entries(STATUS_META) as [TaskStatus, typeof STATUS_META[TaskStatus]][]).map(([key, { color, label }]) => (
+          <div key={key} className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
+            {label}
+          </div>
+        ))}
         <div className="ml-auto flex items-center gap-1.5">
           <span className="w-4 h-px bg-red-500/50 inline-block" />
           Aujourd'hui
