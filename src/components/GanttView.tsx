@@ -75,10 +75,23 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   let timelineStart = baseStart;
   let timelineEnd = baseEnd;
 
-  // Mode jour: afficher TOUS les jours du projet
+  // Mode jour: contrôler par le slider daysToShow
   if (view === "jour") {
-    timelineStart = baseStart;
-    timelineEnd = baseEnd;
+    const allDays = getDayStarts(baseStart, baseEnd);
+    // Calculer la fenêtre basée sur daysToShow
+    let startIndex = 0;
+    if (allDays.length >= daysToShow) {
+      // Chercher aujourd'hui et centrer la fenêtre
+      const todayIndex = allDays.findIndex(d => d.toDateString() === TODAY.toDateString());
+      if (todayIndex !== -1) {
+        startIndex = Math.max(0, Math.min(todayIndex - Math.floor(daysToShow / 2), allDays.length - daysToShow));
+      } else {
+        startIndex = Math.max(0, allDays.length - daysToShow);
+      }
+    }
+    const endIndex = Math.min(startIndex + daysToShow - 1, allDays.length - 1);
+    timelineStart = allDays[startIndex];
+    timelineEnd = allDays[endIndex];
   } else if (view === "mois" && monthsToShow) {
     const allMonths = getMonthStarts(baseStart, baseEnd);
     if (allMonths.length > monthsToShow) {
