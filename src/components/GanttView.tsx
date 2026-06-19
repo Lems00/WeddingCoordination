@@ -143,7 +143,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col h-full">
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col flex-1">
       {/* Header */}
       <div className="px-5 py-3 border-b border-slate-100 flex items-center justify-between flex-wrap gap-3">
         <div>
@@ -437,8 +437,8 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
         </div>
       </div>
 
-      {/* Legend */}
-      <div className="shrink-0 flex items-center gap-5 px-5 py-2.5 border-t border-slate-100 bg-white text-[10px] text-slate-600">
+      {/* Legend - sticky at bottom */}
+      <div className="sticky bottom-0 shrink-0 flex items-center gap-5 px-5 py-2.5 border-t border-slate-100 bg-white text-[10px] text-slate-600">
         <span className="uppercase tracking-widest font-semibold text-slate-700">Légende</span>
         {(Object.entries(STATUS_META) as [TaskStatus, typeof STATUS_META[TaskStatus]][]).map(([key, { color, label }]) => (
           <div key={key} className="flex items-center gap-1.5">
