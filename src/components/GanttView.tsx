@@ -20,7 +20,7 @@ type GanttZoom = "jour" | "semaine" | "mois";
 
 const SIDEBAR_W = 268;
 const ROW_H = 46;
-const HEAD_H = 44;
+const HEAD_H = 60;
 const PHASE_H = 38;
 
 interface GanttViewProps {
@@ -239,9 +239,9 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                 const x = px(tick);
                 const active = isActiveTick(tick);
                 return (
-                  <div key={i} className="absolute top-0 bottom-0 flex flex-col justify-end pb-2" style={{ left: `${x}%` }}>
-                    <div className="w-px h-2 bg-slate-200 mb-1.5" />
-                    <span className={`text-[10px] whitespace-nowrap pl-1.5 font-medium ${active ? "text-indigo-600 font-bold" : "text-slate-600"}`}>
+                  <div key={i} className="absolute top-0 bottom-0 flex flex-col items-center justify-end pb-1" style={{ left: `${x}%`, transform: "translateX(-50%)" }}>
+                    <div className="w-px h-2.5 bg-slate-300" />
+                    <span className={`text-[10px] font-semibold mt-1.5 ${active ? "text-indigo-600 font-bold" : "text-slate-600"}`} style={{ transform: "rotate(-45deg)", transformOrigin: "bottom center", whiteSpace: "nowrap" }}>
                       {tickLabel(tick)}
                     </span>
                   </div>
@@ -249,7 +249,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
               })}
 
               {/* Today line */}
-              <div className="absolute top-0 bottom-0 w-px bg-red-500/40 z-10" style={{ left: `${todayX}%` }} />
+              <div className="absolute top-0 bottom-0 bg-red-500 z-10 shadow-sm" style={{ left: `${todayX}%`, width: "2px", opacity: 0.8 }} />
             </div>
           </div>
 
@@ -295,7 +295,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                       <div key={i} className="absolute top-0 bottom-0 w-px bg-slate-200" style={{ left: `${px(t)}%` }} />
                     ))}
                     {TODAY >= timelineStart && TODAY <= timelineEnd && (
-                      <div className="absolute top-0 bottom-0 w-px bg-red-500/20" style={{ left: `${todayX}%` }} />
+                      <div className="absolute top-0 bottom-0 bg-red-500" style={{ left: `${todayX}%`, width: "2px", opacity: 0.7 }} />
                     )}
                   </div>
                 </div>
@@ -361,12 +361,13 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                             className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1.5 overflow-hidden rounded-full shadow-sm transition-all duration-150"
                             style={{
                               left: `${barX}%`,
-                              width: `${barW}%`,
+                              width: `max(${barW}%, 32px)`,
                               height: 26,
                               backgroundColor: sm.color,
                               opacity: isDimmed ? 0.3 : 0.88,
                               paddingLeft: 6,
                               paddingRight: 8,
+                              minWidth: 32,
                               boxShadow: isH && !isDimmed
                                 ? `0 0 0 1px ${sm.color}60, 0 4px 20px ${sm.color}35`
                                 : "none",
@@ -404,14 +405,14 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
               {ticks.map((t, i) => (
                 <div key={i} className="absolute top-0 bottom-0 w-px bg-slate-100" style={{ left: `${px(t)}%` }} />
               ))}
-              <div className="absolute top-0 bottom-0 w-px bg-red-500/20" style={{ left: `${todayX}%` }} />
+              <div className="absolute top-0 bottom-0 bg-red-500" style={{ left: `${todayX}%`, width: "2px", opacity: 0.7 }} />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Legend */}
-      <div className="shrink-0 flex items-center gap-5 px-5 py-2.5 border-t border-slate-100 bg-white text-[10px] text-slate-600">
+      {/* Legend - Sticky bottom */}
+      <div className="sticky bottom-0 z-40 flex items-center gap-5 px-5 py-2.5 border-t border-slate-100 bg-white text-[10px] text-slate-600 shadow-lg shadow-slate-100/50">
         <span className="uppercase tracking-widest font-semibold text-slate-700">Légende</span>
         {(Object.entries(STATUS_META) as [TaskStatus, typeof STATUS_META[TaskStatus]][]).map(([key, { color, label }]) => (
           <div key={key} className="flex items-center gap-1.5">
