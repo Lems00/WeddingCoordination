@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Task, TaskStatus } from "../data";
 import { User } from "../store";
 import { cn } from "../utils/cn";
@@ -59,6 +59,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   const [monthsToShow, setMonthsToShow] = useState<3 | 4 | null>(null);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [hovered, setHovered] = useState<string | null>(null);
+  const scrollableRef = useRef<HTMLDivElement>(null);
 
   if (tasks.length === 0) {
     return <div className="text-center py-12 text-slate-400">Aucune tâche</div>;
@@ -74,12 +75,10 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   let timelineStart = baseStart;
   let timelineEnd = baseEnd;
 
+  // Mode jour: afficher TOUS les jours du projet
   if (view === "jour") {
-    const allDays = getDayStarts(baseStart, baseEnd);
-    if (allDays.length > daysToShow) {
-      timelineStart = allDays[0];
-      timelineEnd = allDays[Math.min(daysToShow - 1, allDays.length - 1)];
-    }
+    timelineStart = baseStart;
+    timelineEnd = baseEnd;
   } else if (view === "mois" && monthsToShow) {
     const allMonths = getMonthStarts(baseStart, baseEnd);
     if (allMonths.length > monthsToShow) {
@@ -107,6 +106,20 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   };
 
   const todayX = px(TODAY);
+
+  // Centre "aujourd'hui" au milieu en mode jour
+  useEffect(() => {
+    if (view === "jour" && scrollableRef.current) {
+      setTimeout(() => {
+        const container = scrollableRef.current;
+        if (container) {
+          const todayPixels = (todayX / 100) * container.scrollWidth;
+          const centerOffset = todayPixels - container.clientWidth / 2;
+          container.scrollLeft = Math.max(0, centerOffset);
+        }
+      }, 100);
+    }
+  }, [view, todayX]);
 
   // Toggle phase collapse
   const togglePhase = (p: string) => {
@@ -228,7 +241,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
 
       {/* Single scrollable container for header + tasks */}
       {/* Scrollbars confinés DEDANS le Gantt (Revamp pattern) */}
-      <div className="flex-1 overflow-auto" style={{ scrollBehavior: "smooth" }}>
+      <div ref={scrollableRef} className="flex-1 overflow-auto" style={{ scrollBehavior: "smooth" }}>
         <div style={{ minWidth: "100%" }}>
           {/* Timeline header row — sticky top */}
           <div className="sticky top-0 z-30 flex" style={{ height: HEAD_H }}>
