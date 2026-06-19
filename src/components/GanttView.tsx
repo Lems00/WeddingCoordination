@@ -227,8 +227,8 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
       )}
 
       {/* Single scrollable container for header + tasks */}
-      {/* Fidèle au Revamp: overflow-auto avec les deux scrollbars visibles */}
-      <div className="flex-1 overflow-auto pb-12" style={{ scrollBehavior: "smooth" }}>
+      {/* Scrollbars confinés DEDANS le Gantt (Revamp pattern) */}
+      <div className="flex-1 overflow-auto" style={{ scrollBehavior: "smooth" }}>
         <div style={{ minWidth: "100%" }}>
           {/* Timeline header row — sticky top */}
           <div className="sticky top-0 z-30 flex" style={{ height: HEAD_H }}>
@@ -438,8 +438,8 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
         </div>
       </div>
 
-      {/* Legend - fixed at screen bottom, always visible (above scrollbars) */}
-      <div className="fixed bottom-0 left-0 right-0 flex items-center gap-5 px-5 py-2.5 border-t border-slate-100 bg-white text-[10px] text-slate-600 z-50">
+      {/* Legend - Revamp pattern: after scrollable, shrink-0 */}
+      <div className="flex items-center gap-5 px-5 py-2.5 border-t border-slate-100 bg-white text-[10px] text-slate-600 shrink-0">
         <span className="uppercase tracking-widest font-semibold text-slate-700">Légende</span>
         {(Object.entries(STATUS_META) as [TaskStatus, typeof STATUS_META[TaskStatus]][]).map(([key, { color, label }]) => (
           <div key={key} className="flex items-center gap-1.5">
