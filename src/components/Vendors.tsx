@@ -31,8 +31,10 @@ export default function Vendors() {
   });
 
   const getTaskCount = (vendorName: string) => {
-    // Les tâches n'ont plus de champ responsible. À implémenter : lien vendor <-> tasks via responsible_user_id
-    return 0;
+    // Lien vendor <-> tasks via le libellé `responsible` (les noms de prestataires
+    // correspondent aux libellés de responsable, cf. données D1).
+    const target = vendorName.trim().toLowerCase();
+    return tasks.filter((t) => (t.responsible || "").trim().toLowerCase() === target).length;
   };
 
   const confirmedCount = vendors.filter((v) => v.statut === "Confirmé").length;

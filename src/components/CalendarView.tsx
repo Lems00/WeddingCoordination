@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useApp } from "../store";
 import { cn } from "../utils/cn";
 import { STATUS_COLORS, getAssigneeStyle, getTaskResponsible } from "../data";
@@ -88,6 +88,18 @@ export default function CalendarView() {
 
   const todayKey = today.toISOString().split("T")[0];
   const selectedTasks = selectedDate ? tasksByDate[selectedDate] || [] : [];
+
+  // Sélection par défaut au montage : aujourd'hui s'il a des tâches, sinon le
+  // prochain jour avec tâches (sinon le premier). Une seule fois, pour ne pas
+  // ré-ouvrir le panneau après que l'utilisateur l'ait fermé.
+  const didInit = useRef(false);
+  useEffect(() => {
+    if (didInit.current) return;
+    const keys = Object.keys(tasksByDate).sort();
+    if (keys.length === 0) return;
+    didInit.current = true;
+    setSelectedDate(tasksByDate[todayKey] ? todayKey : keys.find((k) => k >= todayKey) || keys[0]);
+  }, [tasksByDate, todayKey]);
 
   // Stats
   const monthStats = useMemo(() => {
