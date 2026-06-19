@@ -50,7 +50,7 @@ const ASSIGNEE_COLORS: Record<string, string> = {
 
 export default function GanttView({ tasks, users, currentProject }: GanttViewProps) {
   const [view, setView] = useState<GanttZoom>("semaine");
-  const [daysToShow, setDaysToShow] = useState(7);
+  const [daysToShow, setDaysToShow] = useState(14);
   const [monthsToShow, setMonthsToShow] = useState<3 | 4 | null>(null);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [hovered, setHovered] = useState<string | null>(null);
@@ -211,7 +211,13 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
       )}
 
       {/* Main scrollable */}
-      <div className="flex-1 overflow-auto relative">
+      <div className="flex-1 overflow-auto overflow-x-auto relative" style={{
+        backgroundImage: "linear-gradient(to left, rgba(0,0,0,0.05), transparent 80%)",
+        backgroundAttachment: "local",
+        backgroundPosition: "right",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "50px 100%"
+      }}>
         {/* TODAY line - unique vertical line across entire gantt */}
         <div
           className="absolute top-0 bottom-0 bg-red-500 z-10 pointer-events-none"
@@ -321,10 +327,14 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                     return (
                       <div
                         key={task.id}
-                        className="flex border-b border-slate-50 hover:bg-slate-50/50 transition"
+                        className={cn(
+                          "flex border-b transition",
+                          isH ? "bg-indigo-50/30 border-indigo-100" : "border-slate-50 hover:bg-slate-100/40"
+                        )}
                         style={{ height: ROW_H }}
                         onMouseEnter={() => setHovered(task.id)}
                         onMouseLeave={() => setHovered(null)}
+                        title={`${task.id}: ${task.task} (${task.status})`}
                       >
                         {/* Task info */}
                         <div
@@ -375,8 +385,9 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                               paddingRight: 8,
                               minWidth: 32,
                               boxShadow: isH && !isDimmed
-                                ? `0 0 0 1px ${sm.color}60, 0 4px 20px ${sm.color}35`
-                                : "none",
+                                ? `0 0 0 2px ${sm.color}40, 0 0 12px ${sm.color}50, 0 4px 20px ${sm.color}35`
+                                : "0 0 0 1px ${sm.color}20",
+                              filter: isH && !isDimmed ? "brightness(1.15)" : "brightness(1)",
                             }}
                           >
                             {assignee && (
