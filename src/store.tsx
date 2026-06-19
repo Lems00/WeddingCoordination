@@ -75,7 +75,20 @@ function loadState(): PersistedState {
   // En mode localStorage seulement (démo), charger les données persistées
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Migration non-destructive : restaurer le responsable des tâches dont le
+      // libellé manque (anciens états sans `responsible`), depuis le seed de référence.
+      if (Array.isArray(parsed?.tasks)) {
+        const respById: Record<string, string | undefined> = Object.fromEntries(
+          DEFAULT_TASKS.map((t) => [t.id, t.responsible])
+        );
+        parsed.tasks = parsed.tasks.map((t: Task) =>
+          !t.responsible && respById[t.id] ? { ...t, responsible: respById[t.id] } : t
+        );
+      }
+      return parsed;
+    }
   } catch {}
   return {
     users: DEFAULT_USERS,

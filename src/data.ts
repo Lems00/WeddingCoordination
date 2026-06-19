@@ -41,7 +41,8 @@ export interface Task {
   start_date: string;
   end_date: string;
   predecessor: string;
-  responsible_user_id: string | null; // FK optionnelle -> users.id (source de vérité unique)
+  responsible_user_id: string | null; // FK optionnelle -> users.id
+  responsible?: string;               // Libellé du responsable (prestataire/rôle) — miroir de la colonne DB responsible_name
   status: TaskStatus;
 }
 
@@ -168,6 +169,15 @@ export function getResponsibleName(responsibleUserId: string | null, users: User
   return user?.name || "Non assigné";
 }
 
+/**
+ * Nom du responsable d'une tâche pour l'affichage : privilégie le libellé libre
+ * `responsible` (prestataire/rôle issu de la DB), sinon résout via le FK user_id.
+ */
+export function getTaskResponsible(task: Task, users: User[]): string {
+  if (task.responsible && task.responsible.trim()) return task.responsible.trim();
+  return getResponsibleName(task.responsible_user_id, users);
+}
+
 // ============================================================================
 //  Données de démonstration
 // ============================================================================
@@ -282,7 +292,7 @@ export const DEFAULT_PROJECTS: Project[] = [
   },
 ];
 
-export const DEFAULT_TASKS: Task[] = [
+const RAW_DEFAULT_TASKS: Task[] = [
   { id: "P01", project_id: "proj_nj2026", phase: "Préparation", category: "Coordination", task: "Signature du contrat de coordination", duration: "1 jour", start_date: "2026-06-02", end_date: "2026-06-02", predecessor: "", responsible_user_id: null, status: "En cours" },
   { id: "P02", project_id: "proj_nj2026", phase: "Préparation", category: "Coordination", task: "Réunion de cadrage avec les mariés", duration: "1 jour", start_date: "2026-06-03", end_date: "2026-06-03", predecessor: "P01", responsible_user_id: null, status: "Terminé" },
   { id: "P03", project_id: "proj_nj2026", phase: "Préparation", category: "Coordination", task: "Visite technique du lieu", duration: "1 jour", start_date: "2026-06-04", end_date: "2026-06-04", predecessor: "P02", responsible_user_id: null, status: "Terminé" },
@@ -359,6 +369,33 @@ export const DEFAULT_TASKS: Task[] = [
   { id: "J20", project_id: "proj_nj2026", phase: "Jour J", category: "Coordination", task: "Briefing général tous prestataires", duration: "30 min", start_date: "2026-07-16", end_date: "2026-07-16", predecessor: "J04,J08,J09,J10,J13,J15,J17,J19", responsible_user_id: null, status: "À faire" },
   { id: "J21", project_id: "proj_nj2026", phase: "Jour J", category: "Événement", task: "Début événement — Accueil des invités", duration: "Continue", start_date: "2026-07-16", end_date: "2026-07-16", predecessor: "J20", responsible_user_id: null, status: "À faire" },
 ];
+
+// Responsables réels par tâche — extraits de la base D1 (colonne responsible_name),
+// source de vérité de l'API. Les libellés alimentent ASSIGNEE_RULES (badges/couleurs).
+// J08 et P15 n'ont pas de responsable en base : laissés vides (à assigner).
+export const TASK_RESPONSIBLES: Record<string, string> = {
+  P01: "Coordinateur", P02: "Coordinateur", P03: "Coordinateur", P04: "Coordinateur", P05: "Coordinateur",
+  P06: "Coordinateur", P07: "Coordinateur", P08: "Coordinateur", P09: "Coordinateur", P10: "Coordinateur",
+  P11: "Mariés", P12: "Coordinateur", P13: "Mariés", P14: "Mariés", P16: "Coordinateur",
+  P17: "Coordinateur", P18: "Coordinateur", P19: "Coordinateur", P20: "Coordinateur", P21: "Coordinateur",
+  P22: "Mariés", P23: "Coordinateur", P24: "Mariés", P25: "Mariés", P26: "Coordinateur",
+  P27: "Coordinateur", P28: "Coordinateur", P29: "Coordinateur", P30: "Coordinateur", P31: "Coordinateur",
+  P32: "Mariés", P33: "Mariés", P34: "Coordinateur", P35: "Mariés", P36: "Coordinateur",
+  P37: "Mariés", P38: "Coordinateur", P39: "Coordinateur", P40: "Coordinateur", P41: "Coordinateur",
+  P42: "Mariés", P43: "Coordinateur", T75: "Mariés",
+  V01: "Jennya", V02: "Jennya", V03: "Prestataire lumières", V04: "Prestataire lumières", V05: "Prestataire lumières",
+  V06: "Album Music", V07: "Album Music", V08: "Album Music", V09: "Coordinateur", V10: "Coordinateur",
+  J01: "Vazaha", J02: "Vazaha", J03: "Vazaha", J04: "Vazaha", J05: "Vazaha",
+  J06: "Coordinateur", J07: "Équipe régie", J09: "Équipe régie", J10: "Jennya",
+  J11: "Mi Rec Production", J12: "Mi Rec Production", J13: "Mi Rec Production",
+  J14: "Prestataire FX", J15: "Prestataire FX", J16: "MRE", J17: "MRE",
+  J18: "Prestataire pâtisserie", J19: "Équipe coordination", J20: "Coordinateur", J21: "Coordinateur",
+};
+
+export const DEFAULT_TASKS: Task[] = RAW_DEFAULT_TASKS.map((t) => ({
+  ...t,
+  responsible: TASK_RESPONSIBLES[t.id] ?? "",
+}));
 
 export const DEFAULT_PRESTATAIRES: Vendor[] = [
   { id: "mirec", project_id: "proj_nj2026", name: "Mi Rec Production", role: "Régie vidéo et photo", color: "#4318FF", statut: "Confirmé" },

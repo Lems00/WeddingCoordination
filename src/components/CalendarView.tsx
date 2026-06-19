@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useApp } from "../store";
 import { cn } from "../utils/cn";
-import { STATUS_COLORS, getAssigneeStyle, getResponsibleName } from "../data";
+import { STATUS_COLORS, getAssigneeStyle, getTaskResponsible } from "../data";
 import {
   ChevronLeft,
   ChevronRight,
@@ -242,7 +242,7 @@ export default function CalendarView() {
                   <div className="space-y-2">
                     {selectedTasks.map((t) => {
                       const sc = STATUS_COLORS[t.status];
-                      const responsibleName = getResponsibleName(t.responsible_user_id, users);
+                      const responsibleName = getTaskResponsible(t, users);
                       const assignee = getAssigneeStyle(responsibleName);
                       return (
                         <div key={t.id} className="bg-white rounded-xl border border-slate-200 p-3 hover:shadow-sm transition">

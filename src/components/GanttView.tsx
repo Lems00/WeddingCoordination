@@ -14,7 +14,7 @@ import {
   isWeekend,
   getDateRangeFromTasks,
 } from "../utils/ganttHelpers";
-import { getResponsibleName, getAssigneeStyle, PHASES } from "../data";
+import { getTaskResponsible, getAssigneeStyle, PHASES } from "../data";
 
 type GanttZoom = "jour" | "semaine" | "mois";
 
@@ -400,7 +400,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                     const barX = px(new Date(task.start_date));
                     const barW = Math.max(px(new Date(task.end_date)) - barX, 6);
                     const isH = hovered === task.id;
-                    const responsibleName = getResponsibleName(task.responsible_user_id, users);
+                    const responsibleName = getTaskResponsible(task, users);
                     const assignee = getAssigneeStyle(responsibleName);
                     const sm = STATUS_META[task.status];
                     const StatusIcon = sm.icon;

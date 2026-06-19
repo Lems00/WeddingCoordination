@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useApp } from "../store";
-import { STATUS_COLORS, PHASES, Task, TaskStatus, getAssigneeStyle, getResponsibleName } from "../data";
+import { STATUS_COLORS, PHASES, Task, TaskStatus, getAssigneeStyle, getTaskResponsible } from "../data";
 import type { User } from "../store";
 import { cn } from "../utils/cn";
 import GanttView from "./GanttView";
@@ -63,7 +63,7 @@ export default function Tasks() {
   const assigneeLegend = useMemo(() => {
     const map = new Map<string, ReturnType<typeof getAssigneeStyle>>();
     tasks.forEach((t) => {
-      const responsibleName = getResponsibleName(t.responsible_user_id, users);
+      const responsibleName = getTaskResponsible(t, users);
       const s = getAssigneeStyle(responsibleName);
       if (!map.has(s.label)) map.set(s.label, s);
     });
@@ -262,7 +262,7 @@ function KanbanView({
 
             <div className="space-y-2">
               {colTasks.map((t) => {
-                const responsibleName = getResponsibleName(t.responsible_user_id, users);
+                const responsibleName = getTaskResponsible(t, users);
                 const assignee = getAssigneeStyle(responsibleName);
                 return (
                   <div
@@ -374,7 +374,7 @@ function ListView({
             <div className="divide-y divide-slate-100">
               {items.map((t) => {
                 const sc = STATUS_COLORS[t.status];
-                const responsibleName = getResponsibleName(t.responsible_user_id, users);
+                const responsibleName = getTaskResponsible(t, users);
                 const assignee = getAssigneeStyle(responsibleName);
                 return (
                   <div key={t.id} className="px-5 py-3 hover:bg-slate-50/50 transition group">
