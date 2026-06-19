@@ -211,7 +211,18 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
       )}
 
       {/* Main scrollable */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto relative">
+        {/* TODAY line - unique vertical line across entire gantt */}
+        <div
+          className="absolute top-0 bottom-0 bg-red-500 z-10 pointer-events-none"
+          style={{
+            left: `${todayX}%`,
+            width: "2px",
+            opacity: 0.7,
+            boxShadow: "0 0 8px rgba(239, 68, 68, 0.4)"
+          }}
+        />
+
         <div style={{ minWidth: "100%" }}>
           {/* Timeline header */}
           <div className="sticky top-0 z-30 flex" style={{ height: HEAD_H }}>
@@ -248,8 +259,6 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                 );
               })}
 
-              {/* Today line */}
-              <div className="absolute top-0 bottom-0 bg-red-500 z-10 shadow-sm" style={{ left: `${todayX}%`, width: "2px", opacity: 0.8 }} />
             </div>
           </div>
 
@@ -294,9 +303,6 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                     {ticks.map((t, i) => (
                       <div key={i} className="absolute top-0 bottom-0 w-px bg-slate-200" style={{ left: `${px(t)}%` }} />
                     ))}
-                    {TODAY >= timelineStart && TODAY <= timelineEnd && (
-                      <div className="absolute top-0 bottom-0 bg-red-500" style={{ left: `${todayX}%`, width: "2px", opacity: 0.7 }} />
-                    )}
                   </div>
                 </div>
 
@@ -405,7 +411,6 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
               {ticks.map((t, i) => (
                 <div key={i} className="absolute top-0 bottom-0 w-px bg-slate-100" style={{ left: `${px(t)}%` }} />
               ))}
-              <div className="absolute top-0 bottom-0 bg-red-500" style={{ left: `${todayX}%`, width: "2px", opacity: 0.7 }} />
             </div>
           </div>
         </div>
