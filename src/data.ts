@@ -392,9 +392,21 @@ export const TASK_RESPONSIBLES: Record<string, string> = {
   J18: "Prestataire pâtisserie", J19: "Équipe coordination", J20: "Coordinateur", J21: "Coordinateur",
 };
 
+// Statuts réels par tâche — export de la base D1 en ligne (colonne status).
+// 18 « Terminé » + 5 « En cours » ; les autres sont « À faire » (défaut, non listées).
+// P46/P47 existent en base mais pas dans le front (ignorés via le ?? ci-dessous).
+export const TASK_STATUS_FROM_DB: Record<string, TaskStatus> = {
+  P01: "Terminé", P02: "Terminé", P03: "Terminé", P06: "Terminé", P07: "Terminé",
+  P08: "Terminé", P09: "Terminé", P10: "Terminé", P16: "Terminé", P17: "Terminé",
+  P18: "Terminé", P19: "Terminé", P20: "Terminé", P21: "Terminé", P22: "Terminé",
+  P28: "Terminé", P29: "Terminé", T75: "Terminé",
+  P11: "En cours", P32: "En cours", P35: "En cours",
+};
+
 export const DEFAULT_TASKS: Task[] = RAW_DEFAULT_TASKS.map((t) => ({
   ...t,
   responsible: TASK_RESPONSIBLES[t.id] ?? "",
+  status: TASK_STATUS_FROM_DB[t.id] ?? t.status,
 }));
 
 export const DEFAULT_PRESTATAIRES: Vendor[] = [

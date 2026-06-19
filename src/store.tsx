@@ -10,6 +10,7 @@ import {
   DEFAULT_USERS,
   DEFAULT_PROJECTS,
   DEFAULT_TASKS,
+  TASK_STATUS_FROM_DB,
   DEFAULT_PRESTATAIRES,
   DEFAULT_BUDGET_EXPENSES,
   DEFAULT_NOTIFICATIONS,
@@ -22,6 +23,9 @@ export type { User, Project, Task, Vendor, BudgetExpense, Notification };
 export type { BudgetExpense as BudgetExpenseType };
 
 const STORAGE_KEY = "wedding_saas_state_v2";
+// Clé dédiée pour la synchro UNIQUE des statuts depuis la base D1 (indépendante de
+// la persistance de l'état, qui ne conserverait pas un flag interne).
+const STATUS_SYNC_KEY = "wedding_status_synced_from_db_v1";
 
 // Bascule localStorage (démo) <-> API D1. Activée via .env : VITE_USE_API=true.
 // Permet une migration réversible (cf. Jalon 2 du plan « Fondations d'abord »).
@@ -86,6 +90,16 @@ function loadState(): PersistedState {
         parsed.tasks = parsed.tasks.map((t: Task) =>
           !t.responsible && respById[t.id] ? { ...t, responsible: respById[t.id] } : t
         );
+
+        // Migration UNIQUE des statuts depuis la base D1 en ligne (18 Terminé + 5 En
+        // cours). Appliquée une seule fois (clé dédiée) pour ne pas écraser les
+        // changements de statut faits par l'utilisateur après la synchro.
+        if (!localStorage.getItem(STATUS_SYNC_KEY)) {
+          parsed.tasks = parsed.tasks.map((t: Task) =>
+            TASK_STATUS_FROM_DB[t.id] ? { ...t, status: TASK_STATUS_FROM_DB[t.id] } : t
+          );
+          localStorage.setItem(STATUS_SYNC_KEY, new Date().toISOString());
+        }
       }
       return parsed;
     }
