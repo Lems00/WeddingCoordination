@@ -6,6 +6,15 @@
   }
 }
 
+/* Masque le scrollbar tout en gardant le défilement (rails/sidebars). */
+.no-scrollbar {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE/Edge legacy */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;                /* Chrome/Safari */
+}
+
 /* =============================================================================
    THEMES
    Variables CSS par thème. Les composants utilisent bg-(--bg-main) etc.

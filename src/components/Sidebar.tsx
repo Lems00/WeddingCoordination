@@ -72,7 +72,7 @@ export default function Sidebar({ currentPage, onNavigate, collapsed = false, on
   // ==========================================================================
   if (collapsed) {
     return (
-      <aside className="flex flex-col w-20 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white min-h-screen sticky top-0 items-center">
+      <aside className="flex flex-col w-20 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white h-screen sticky top-0 items-center">
         {/* Logo + expand button */}
         <div className="pt-6 pb-4 border-b border-white/5 w-full flex flex-col items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
@@ -99,7 +99,7 @@ export default function Sidebar({ currentPage, onNavigate, collapsed = false, on
         </div>
 
         {/* Navigation icons */}
-        <nav className="flex-1 py-4 w-full flex flex-col items-center gap-1.5 overflow-y-auto">
+        <nav className="flex-1 py-4 w-full flex flex-col items-center gap-1.5 overflow-y-auto no-scrollbar">
           {visibleMenu.map((item) => {
             const Icon = item.icon;
             const active = currentPage === item.id;
@@ -157,7 +157,7 @@ export default function Sidebar({ currentPage, onNavigate, collapsed = false, on
   //  EXPANDED (full) MODE
   // ==========================================================================
   return (
-    <aside className="flex flex-col w-72 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white min-h-screen sticky top-0">
+    <aside className="flex flex-col w-72 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white h-screen sticky top-0">
       {/* Logo + collapse button */}
       <div className="px-6 pt-7 pb-5 border-b border-white/5">
         <div className="flex items-center gap-3">
@@ -257,7 +257,7 @@ export default function Sidebar({ currentPage, onNavigate, collapsed = false, on
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto no-scrollbar">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 px-3 mb-2">Navigation</p>
         {visibleMenu.map((item) => {
           const Icon = item.icon;
