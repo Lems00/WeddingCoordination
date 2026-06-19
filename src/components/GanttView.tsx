@@ -143,9 +143,9 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col flex-1">
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col flex-1 h-full">
       {/* Header */}
-      <div className="px-5 py-3 border-b border-slate-100 flex items-center justify-between flex-wrap gap-3">
+      <div className="px-5 py-3 border-b border-slate-100 flex items-center justify-between flex-wrap gap-3 shrink-0">
         <div>
           <h2 className="font-semibold text-slate-900">Diagramme de Gantt</h2>
           <p className="text-sm text-slate-500">Chronologie visuelle des tâches</p>
@@ -181,7 +181,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
 
       {/* Day zoom slider */}
       {view === "jour" && (
-        <div className="px-5 py-2 border-b border-slate-100 bg-slate-50 flex items-center gap-3 flex-wrap">
+        <div className="px-5 py-2 border-b border-slate-100 bg-slate-50 flex items-center gap-3 flex-wrap shrink-0">
           <span className="text-xs text-slate-600">Jours visibles:</span>
           <div className="flex items-center gap-2">
             <span className="text-xs font-medium text-slate-600 w-5">{daysToShow}</span>
@@ -203,7 +203,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
 
       {/* Month range buttons */}
       {view === "mois" && (
-        <div className="px-5 py-2 border-b border-slate-100 bg-slate-50 flex items-center gap-3 flex-wrap">
+        <div className="px-5 py-2 border-b border-slate-100 bg-slate-50 flex items-center gap-3 flex-wrap shrink-0">
           <span className="text-xs text-slate-600">Affichage:</span>
           <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-lg p-1">
             {[
@@ -227,7 +227,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
       )}
 
       {/* Single scrollable container for header + tasks */}
-      <div className="flex-1 overflow-auto pb-16">
+      <div className="flex-1 overflow-auto">
         <div style={{ minWidth: "100%" }}>
           {/* Timeline header row — sticky top */}
           <div className="sticky top-0 z-30 flex" style={{ height: HEAD_H }}>
@@ -437,8 +437,8 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
         </div>
       </div>
 
-      {/* Legend - fixed at screen bottom */}
-      <div className="fixed bottom-0 left-0 right-0 shrink-0 flex items-center gap-5 px-5 py-2.5 border-t border-slate-100 bg-white text-[10px] text-slate-600 z-40">
+      {/* Legend - shrink-0, after scrollable area */}
+      <div className="shrink-0 flex items-center gap-5 px-5 py-2.5 border-t border-slate-100 bg-white text-[10px] text-slate-600">
         <span className="uppercase tracking-widest font-semibold text-slate-700">Légende</span>
         {(Object.entries(STATUS_META) as [TaskStatus, typeof STATUS_META[TaskStatus]][]).map(([key, { color, label }]) => (
           <div key={key} className="flex items-center gap-1.5">
