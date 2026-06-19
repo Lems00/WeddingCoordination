@@ -64,7 +64,8 @@ export const getWeekStarts = (start: Date, end: Date): Date[] => {
 
 export const dayLabel = (date: Date): string => {
   const days = ["dim", "lun", "mar", "mer", "jeu", "ven", "sam"];
-  return `${days[date.getDay()]} ${date.getDate()}`;
+  const monthShort = FR_MONTHS[date.getMonth()].substring(0, 3);
+  return `${date.getDate()} ${monthShort}`;
 };
 
 export const monthLabel = (date: Date): string => {

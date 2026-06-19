@@ -246,7 +246,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                 .map((t, i) => (
                   <div
                     key={i}
-                    className="absolute top-0 bottom-0 bg-slate-50/50"
+                    className="absolute top-0 bottom-0 bg-orange-100/30"
                     style={{ left: `${px(t)}%`, width: percentPerPeriod + "%" }}
                   />
                 ))}
@@ -364,7 +364,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                             .map((t, i) => (
                               <div
                                 key={i}
-                                className="absolute top-0 bottom-0 bg-slate-50/50"
+                                className="absolute top-0 bottom-0 bg-orange-100/30"
                                 style={{ left: `${px(t)}%`, width: percentPerPeriod + "%" }}
                               />
                             ))}
