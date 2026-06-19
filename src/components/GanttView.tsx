@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Task, TaskStatus } from "../data";
 import { User } from "../store";
 import { cn } from "../utils/cn";
@@ -54,6 +54,41 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   const [monthsToShow, setMonthsToShow] = useState<3 | 4 | null>(null);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [hovered, setHovered] = useState<string | null>(null);
+  const [scrollPos, setScrollPos] = useState(0);
+  const [dragging, setDragging] = useState<{ taskId: string; startX: number } | null>(null);
+
+  useEffect(() => {
+    if (!dragging) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // Visual feedback during drag
+      document.body.style.cursor = 'grabbing';
+    };
+
+    const handleMouseUp = (e: MouseEvent) => {
+      if (dragging) {
+        const deltaX = e.clientX - dragging.startX;
+        const deltaDays = Math.round(deltaX / 4); // 4px = 1 day approx
+
+        const task = tasks.find(t => t.id === dragging.taskId);
+        if (task && deltaDays !== 0) {
+          const newStartDate = addDays(new Date(task.start_date), deltaDays);
+          const newEndDate = addDays(new Date(task.end_date), deltaDays);
+          // Update task dates (integrate with your update function)
+          console.log(`Rescheduled ${task.id} by ${deltaDays} days`);
+        }
+      }
+      setDragging(null);
+      document.body.style.cursor = 'auto';
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [dragging, tasks]);
 
   if (tasks.length === 0) {
     return <div className="text-center py-12 text-slate-400">Aucune tâche</div>;
@@ -211,13 +246,17 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
       )}
 
       {/* Main scrollable */}
-      <div className="flex-1 overflow-auto overflow-x-auto relative" style={{
-        backgroundImage: "linear-gradient(to left, rgba(0,0,0,0.05), transparent 80%)",
-        backgroundAttachment: "local",
-        backgroundPosition: "right",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "50px 100%"
-      }}>
+      <div
+        className="flex-1 overflow-auto overflow-x-auto relative"
+        style={{
+          backgroundImage: "linear-gradient(to left, rgba(0,0,0,0.05), transparent 80%)",
+          backgroundAttachment: "local",
+          backgroundPosition: "right",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "50px 100%"
+        }}
+        onScroll={(e) => setScrollPos((e.target as HTMLDivElement).scrollTop)}
+      >
         {/* TODAY line - unique vertical line across entire gantt */}
         <div
           className="absolute top-0 bottom-0 bg-red-500 z-10 pointer-events-none"
@@ -374,7 +413,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
 
                           {/* Task bar */}
                           <div
-                            className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1.5 overflow-hidden rounded-full shadow-sm transition-all duration-150"
+                            className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1.5 overflow-hidden rounded-full shadow-sm transition-all duration-150 cursor-grab active:cursor-grabbing select-none"
                             style={{
                               left: `${barX}%`,
                               width: `max(${barW}%, 32px)`,
@@ -388,6 +427,9 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                                 ? `0 0 0 2px ${sm.color}40, 0 0 12px ${sm.color}50, 0 4px 20px ${sm.color}35`
                                 : "0 0 0 1px ${sm.color}20",
                               filter: isH && !isDimmed ? "brightness(1.15)" : "brightness(1)",
+                            }}
+                            onMouseDown={(e) => {
+                              if (e.button === 0) setDragging({ taskId: task.id, startX: e.clientX });
                             }}
                           >
                             {assignee && (
