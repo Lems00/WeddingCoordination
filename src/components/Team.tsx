@@ -131,6 +131,8 @@ export default function Team() {
                     </button>
                     <button
                       onClick={() => setUserToDelete(u)}
+                      aria-label={`Supprimer ${u.name}`}
+                      title="Supprimer"
                       className="px-3 py-2 rounded-lg text-xs font-medium text-red-600 hover:bg-red-50 transition"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -210,7 +212,7 @@ function AddMemberModal({ onClose, onSave, existingIds }: { onClose: () => void;
             <Heart className="w-5 h-5 text-rose-500" />
             <h2 className="text-lg font-semibold">Inviter un membre</h2>
           </div>
-          <button onClick={onClose} className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} aria-label="Fermer" title="Fermer" className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-6 space-y-3">
           <label className="block">
@@ -356,7 +358,7 @@ function EditMemberModal({ user, onClose, onSave }: { user: User; onClose: () =>
             <Edit2 className="w-5 h-5 text-blue-500" />
             <h2 className="text-lg font-semibold">Modifier le membre</h2>
           </div>
-          <button onClick={onClose} className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} aria-label="Fermer" title="Fermer" className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-6 space-y-3">
           <label className="block">
@@ -418,7 +420,7 @@ function DeleteMemberModal({ user, onClose, onConfirm }: { user: User; onClose: 
             <AlertCircle className="w-5 h-5 text-red-500" />
             <h2 className="text-lg font-semibold">Supprimer le membre</h2>
           </div>
-          <button onClick={onClose} className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} aria-label="Fermer" title="Fermer" className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-6">
           <p className="text-slate-700 mb-2">

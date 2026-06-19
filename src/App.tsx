@@ -109,7 +109,7 @@ function AppShell() {
         {/* Top bar */}
         <div className="sticky top-0 z-30 backdrop-blur-md border-b" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
           <div className="px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-3">
-            <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 rounded-lg hover:bg-slate-100">
+            <button onClick={() => setSidebarOpen(true)} aria-label="Ouvrir le menu" title="Menu" className="lg:hidden p-2 rounded-lg hover:bg-slate-100">
               <Menu className="w-5 h-5" />
             </button>
             {sidebarCollapsed && (

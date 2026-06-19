@@ -200,7 +200,7 @@ function ProjectModal({ project, planners, onClose, onSave, agencyId }: {
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{project ? "Modifier" : "Nouveau"} projet</h2>
-          <button onClick={onClose} className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} aria-label="Fermer" title="Fermer" className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-6 space-y-3">
           <label className="block"><span className="block text-xs font-medium text-slate-600 mb-1">Nom des mariés</span>

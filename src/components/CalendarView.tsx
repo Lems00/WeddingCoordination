@@ -140,13 +140,13 @@ export default function CalendarView() {
         {/* Header */}
         <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-2">
-            <button onClick={prevMonth} className="p-2 rounded-lg hover:bg-slate-100 transition">
+            <button onClick={prevMonth} aria-label="Mois précédent" title="Mois précédent" className="p-2 rounded-lg hover:bg-slate-100 transition">
               <ChevronLeft className="w-5 h-5 text-slate-600" />
             </button>
             <h2 className="text-xl font-bold text-slate-900 min-w-[180px] text-center">
               {MONTHS[currentDate.getMonth()]} {currentDate.getFullYear()}
             </h2>
-            <button onClick={nextMonth} className="p-2 rounded-lg hover:bg-slate-100 transition">
+            <button onClick={nextMonth} aria-label="Mois suivant" title="Mois suivant" className="p-2 rounded-lg hover:bg-slate-100 transition">
               <ChevronRight className="w-5 h-5 text-slate-600" />
             </button>
             <button onClick={goToToday} className="ml-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition">
@@ -242,7 +242,7 @@ export default function CalendarView() {
                       {new Date(selectedDate + "T00:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}
                     </h3>
                   </div>
-                  <button onClick={() => setSelectedDate(null)} className="p-1.5 rounded hover:bg-slate-200">
+                  <button onClick={() => setSelectedDate(null)} aria-label="Fermer le panneau" title="Fermer" className="p-1.5 rounded hover:bg-slate-200">
                     <X className="w-4 h-4" />
                   </button>
                 </div>

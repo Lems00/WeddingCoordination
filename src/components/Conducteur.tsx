@@ -602,10 +602,10 @@ function JourHeader({ jour, index, canEdit, onEdit, onDelete, onAddPhase }: {
             <button onClick={onAddPhase} className="px-3 py-1.5 rounded-lg text-sm font-medium bg-indigo-600 text-white flex items-center gap-1">
               <Plus className="w-4 h-4" /> Phase
             </button>
-            <button onClick={onEdit} className="p-2 rounded-lg text-slate-500 hover:bg-slate-100">
+            <button onClick={onEdit} aria-label="Modifier la phase" title="Modifier" className="p-2 rounded-lg text-slate-500 hover:bg-slate-100">
               <Edit2 className="w-4 h-4" />
             </button>
-            <button onClick={onDelete} className="p-2 rounded-lg text-red-500 hover:bg-red-50">
+            <button onClick={onDelete} aria-label="Supprimer la phase" title="Supprimer" className="p-2 rounded-lg text-red-500 hover:bg-red-50">
               <Trash2 className="w-4 h-4" />
             </button>
           </div>
@@ -643,6 +643,9 @@ function PhaseCard({ phase, canEdit, onToggle, onEdit, onDelete }: {
             <button
               onClick={onToggle}
               disabled={!canEdit}
+              aria-pressed={phase.completed}
+              aria-label={phase.completed ? "Marquer comme non terminé" : "Marquer comme terminé"}
+              title={canEdit ? (phase.completed ? "Marquer comme non terminé" : "Marquer comme terminé") : undefined}
               className={cn(
                 "mt-0.5 w-6 h-6 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition",
                 phase.completed
@@ -668,10 +671,10 @@ function PhaseCard({ phase, canEdit, onToggle, onEdit, onDelete }: {
           </div>
           {canEdit && (
             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition print:hidden">
-              <button onClick={onEdit} className="p-1.5 rounded hover:bg-slate-100 text-slate-500">
+              <button onClick={onEdit} aria-label="Modifier l'événement" title="Modifier" className="p-1.5 rounded hover:bg-slate-100 text-slate-500">
                 <Edit2 className="w-4 h-4" />
               </button>
-              <button onClick={onDelete} className="p-1.5 rounded hover:bg-red-50 text-red-500">
+              <button onClick={onDelete} aria-label="Supprimer l'événement" title="Supprimer" className="p-1.5 rounded hover:bg-red-50 text-red-500">
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
@@ -923,7 +926,7 @@ function Modal({ title, onClose, children, wide }: { title: string; onClose: () 
       <div className={cn("bg-white rounded-2xl shadow-2xl w-full max-h-[90vh] overflow-y-auto", wide ? "max-w-3xl" : "max-w-lg")}>
         <div className="p-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
           <h2 className="text-lg font-semibold">{title}</h2>
-          <button onClick={onClose} className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} aria-label="Fermer" title="Fermer" className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-6">{children}</div>
       </div>

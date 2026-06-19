@@ -382,6 +382,8 @@ function ListView({
                       <button
                         onClick={() => onCycleStatus(t)}
                         disabled={!canEdit}
+                        aria-label={`Changer le statut — ${t.task} (actuellement ${t.status})`}
+                        title={canEdit ? "Changer le statut" : undefined}
                         className={cn(
                           "mt-0.5 w-5 h-5 rounded-md border-2 flex items-center justify-center transition flex-shrink-0",
                           t.status === "Terminé" ? "bg-emerald-500 border-emerald-500" : "border-slate-300 hover:border-indigo-400",
@@ -444,6 +446,10 @@ function TaskMenu({ task, onEdit, onDelete }: { task: Task; onEdit: (t: Task) =>
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
+        aria-label="Actions de la tâche"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        title="Actions"
         className="p-1.5 rounded hover:bg-slate-200 text-slate-500 transition"
       >
         <MoreVertical className="w-4 h-4" />
@@ -481,7 +487,7 @@ function EditTaskModal({ task, users, onSave, onCancel }: { task: Task; users: U
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Modifier la tâche</h2>
-          <button onClick={onCancel} className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
+          <button onClick={onCancel} aria-label="Fermer" title="Fermer" className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-6 space-y-3">
           <Field label="Nom de la tâche"><input className="input" value={form.task} onChange={(e) => setForm({ ...form, task: e.target.value })} /></Field>
@@ -559,7 +565,7 @@ function AddTaskModal({ onClose, onSave, existingIds, users }: {
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Nouvelle tâche</h2>
-          <button onClick={onClose} className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} aria-label="Fermer" title="Fermer" className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-6 space-y-3">
           <div className="grid grid-cols-2 gap-3">

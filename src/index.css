@@ -15,6 +15,21 @@
   display: none;                /* Chrome/Safari */
 }
 
+/* Accessibilité : anneau de focus visible au CLAVIER uniquement (focus-visible),
+   sur tous les éléments interactifs. Couleur = accent du thème courant.
+   Les inputs gardent leur ring Tailwind (focus:outline-none les exclut ici). */
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+summary:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible {
+  outline: 2px solid var(--accent, #4f46e5);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
 /* =============================================================================
    THEMES
    Variables CSS par thème. Les composants utilisent bg-(--bg-main) etc.

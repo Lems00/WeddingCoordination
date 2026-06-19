@@ -151,6 +151,8 @@ export default function Vendors() {
                     </button>
                     <button
                       onClick={() => { if (confirm(`Supprimer ${v.name} ?`)) deleteVendor(v.id); }}
+                      aria-label={`Supprimer ${v.name}`}
+                      title="Supprimer"
                       className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-red-600 hover:bg-red-50 transition"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -200,7 +202,7 @@ function VendorModal({ vendor, onClose, onSave, projectId }: { vendor: Vendor | 
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{vendor ? "Modifier" : "Ajouter"} prestataire</h2>
-          <button onClick={onClose} className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} aria-label="Fermer" title="Fermer" className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-6 space-y-3">
           <label className="block">

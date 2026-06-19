@@ -268,7 +268,7 @@ function AddExpenseModal({ onClose, onSave, projectId }: { onClose: () => void; 
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Nouvelle dépense</h2>
-          <button onClick={onClose} className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} aria-label="Fermer" title="Fermer" className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-6 space-y-3">
           <label className="block"><span className="block text-xs font-medium text-slate-600 mb-1">Description</span>
@@ -313,7 +313,7 @@ function EditExpenseModal({ expense, onClose, onSave }: { expense: BudgetExpense
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Modifier la dépense</h2>
-          <button onClick={onClose} className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} aria-label="Fermer" title="Fermer" className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-6 space-y-3">
           <label className="block"><span className="block text-xs font-medium text-slate-600 mb-1">Description</span>
@@ -365,7 +365,7 @@ function EditBudgetModal({ project, onClose, onSave }: { project: any; onClose: 
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Configuration du budget</h2>
-          <button onClick={onClose} className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} aria-label="Fermer" title="Fermer" className="p-1 rounded hover:bg-slate-100"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-6 space-y-4">
           <div className="space-y-3">
