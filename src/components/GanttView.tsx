@@ -227,8 +227,8 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
       )}
 
       {/* Single scrollable container for header + tasks */}
-      {/* Scrollbar horizontal visible juste au-dessus de la légende fixée */}
-      <div className="flex-1 overflow-auto">
+      {/* Scrollbars configurés: horizontal + vertical confinés au Gantt */}
+      <div className="flex-1 overflow-auto pb-12" style={{ scrollBehavior: "smooth" }}>
         <div style={{ minWidth: "100%" }}>
           {/* Timeline header row — sticky top */}
           <div className="sticky top-0 z-30 flex" style={{ height: HEAD_H }}>
@@ -438,8 +438,8 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
         </div>
       </div>
 
-      {/* Legend - fixed at screen bottom, always visible */}
-      <div className="fixed bottom-0 left-0 right-0 flex items-center gap-5 px-5 py-2.5 border-t border-slate-100 bg-white text-[10px] text-slate-600 z-40">
+      {/* Legend - fixed at screen bottom, always visible (above scrollbars) */}
+      <div className="fixed bottom-0 left-0 right-0 flex items-center gap-5 px-5 py-2.5 border-t border-slate-100 bg-white text-[10px] text-slate-600 z-50">
         <span className="uppercase tracking-widest font-semibold text-slate-700">Légende</span>
         {(Object.entries(STATUS_META) as [TaskStatus, typeof STATUS_META[TaskStatus]][]).map(([key, { color, label }]) => (
           <div key={key} className="flex items-center gap-1.5">
