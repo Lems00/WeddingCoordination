@@ -42,19 +42,12 @@ const STATUS_META: Record<TaskStatus, { icon: typeof CheckCircle2; color: string
   "Bloqué": { icon: AlertCircle, color: "#F59E0B", label: "Bloqué" },
 };
 
-const ASSIGNEE_COLORS: Record<string, string> = {
-  "C": "#10B981",
-  "M": "#C084FC",
-  "A": "#FB923C",
-};
-
 export default function GanttView({ tasks, users, currentProject }: GanttViewProps) {
   const [view, setView] = useState<GanttZoom>("semaine");
   const [daysToShow, setDaysToShow] = useState(14);
   const [monthsToShow, setMonthsToShow] = useState<3 | 4 | null>(null);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [hovered, setHovered] = useState<string | null>(null);
-  const [dragging, setDragging] = useState<{ taskId: string; startX: number } | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [vpWidth, setVpWidth] = useState(600);
@@ -97,39 +90,6 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
       clearTimeout(t);
     };
   }, []);
-
-  useEffect(() => {
-    if (!dragging) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      // Visual feedback during drag
-      document.body.style.cursor = 'grabbing';
-    };
-
-    const handleMouseUp = (e: MouseEvent) => {
-      if (dragging) {
-        const deltaX = e.clientX - dragging.startX;
-        const deltaDays = Math.round(deltaX / 4); // 4px = 1 day approx
-
-        const task = tasks.find(t => t.id === dragging.taskId);
-        if (task && deltaDays !== 0) {
-          const newStartDate = addDays(new Date(task.start_date), deltaDays);
-          const newEndDate = addDays(new Date(task.end_date), deltaDays);
-          // Update task dates (integrate with your update function)
-          console.log(`Rescheduled ${task.id} by ${deltaDays} days`);
-        }
-      }
-      setDragging(null);
-      document.body.style.cursor = 'auto';
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [dragging, tasks]);
 
   if (tasks.length === 0) {
     return <div className="text-center py-12 text-slate-400">Aucune tâche</div>;
@@ -456,7 +416,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
 
                           {/* Task bar */}
                           <div
-                            className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1.5 overflow-hidden rounded-full shadow-sm transition-all duration-150 cursor-grab active:cursor-grabbing select-none"
+                            className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1.5 overflow-hidden rounded-full shadow-sm transition-all duration-150"
                             style={{
                               left: `${barX}%`,
                               width: `max(${barW}%, 32px)`,
@@ -468,11 +428,8 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                               minWidth: 32,
                               boxShadow: isH && !isDimmed
                                 ? `0 0 0 2px ${sm.color}40, 0 0 12px ${sm.color}50, 0 4px 20px ${sm.color}35`
-                                : "0 0 0 1px ${sm.color}20",
+                                : `0 0 0 1px ${sm.color}20`,
                               filter: isH && !isDimmed ? "brightness(1.15)" : "brightness(1)",
-                            }}
-                            onMouseDown={(e) => {
-                              if (e.button === 0) setDragging({ taskId: task.id, startX: e.clientX });
                             }}
                           >
                             {assignee && (

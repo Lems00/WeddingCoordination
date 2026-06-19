@@ -16,6 +16,7 @@ import {
   Lock,
   Copy,
   Check,
+  Briefcase,
 } from "lucide-react";
 
 export default function Team() {
@@ -76,6 +77,7 @@ export default function Team() {
           const isAdmin = u.role === "admin" || u.role === "super_admin";
           const isSelf = u.id === currentUser?.id;
           const isSuperAdmin = u.role === "super_admin";
+          const isPlanner = u.role === "planner";
           const canEdit = canManageTeam && !isSuperAdmin;
 
           return (
@@ -92,10 +94,10 @@ export default function Team() {
                 <div className="absolute top-3 right-3 flex items-center gap-2">
                   <span className={cn(
                     "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold",
-                    isSuperAdmin ? "bg-amber-100 text-amber-700" : isAdmin ? "bg-indigo-100 text-indigo-700" : "bg-emerald-100 text-emerald-700"
+                    isSuperAdmin ? "bg-amber-100 text-amber-700" : isAdmin ? "bg-indigo-100 text-indigo-700" : isPlanner ? "bg-violet-100 text-violet-700" : "bg-emerald-100 text-emerald-700"
                   )}>
-                    {isSuperAdmin ? <Shield className="w-3 h-3" /> : isAdmin ? <Shield className="w-3 h-3" /> : <UserIcon className="w-3 h-3" />}
-                    {isSuperAdmin ? "Super Admin" : isAdmin ? "Admin" : "Client"}
+                    {isSuperAdmin ? <Shield className="w-3 h-3" /> : isAdmin ? <Shield className="w-3 h-3" /> : isPlanner ? <Briefcase className="w-3 h-3" /> : <UserIcon className="w-3 h-3" />}
+                    {isSuperAdmin ? "Super Admin" : isAdmin ? "Admin" : isPlanner ? "Planner" : "Client"}
                   </span>
                 </div>
               </div>
@@ -115,7 +117,7 @@ export default function Team() {
                   <div className="flex-1">
                     <p className="text-[10px] uppercase tracking-wider text-slate-400">Rôle</p>
                     <p className="text-sm font-medium text-slate-700">
-                      {isSuperAdmin ? "Administrateur système" : isAdmin ? "Coordinateur de l'événement" : "Partie prenante"}
+                      {isSuperAdmin ? "Administrateur système" : isAdmin ? "Coordinateur de l'événement" : isPlanner ? "Planificateur (Planner)" : "Partie prenante"}
                     </p>
                   </div>
                 </div>
@@ -281,12 +283,6 @@ function EditMemberModal({ user, onClose, onSave }: { user: User; onClose: () =>
     const pwd = generateDefaultPassword();
     setNewPassword(pwd);
     setShowResetPassword(true);
-  };
-
-  const handleConfirmReset = () => {
-    setForm({ ...form, password: newPassword });
-    onSave({ ...form, password: newPassword });
-    setShowResetPassword(false);
   };
 
   const handleSave = () => {
