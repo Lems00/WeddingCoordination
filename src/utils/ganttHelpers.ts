@@ -63,9 +63,8 @@ export const getWeekStarts = (start: Date, end: Date): Date[] => {
 };
 
 export const dayLabel = (date: Date): string => {
-  const days = ["dim", "lun", "mar", "mer", "jeu", "ven", "sam"];
-  const monthShort = FR_MONTHS[date.getMonth()].substring(0, 3);
-  return `${date.getDate()} ${monthShort}`;
+  // Use the full short month (juin/juil are NOT distinguishable at 3 letters)
+  return `${date.getDate()} ${FR_MONTHS[date.getMonth()]}`;
 };
 
 export const monthLabel = (date: Date): string => {

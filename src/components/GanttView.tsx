@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Task, TaskStatus } from "../data";
 import { User } from "../store";
 import { cn } from "../utils/cn";
@@ -54,8 +54,20 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   const [monthsToShow, setMonthsToShow] = useState<3 | 4 | null>(null);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [hovered, setHovered] = useState<string | null>(null);
-  const [scrollPos, setScrollPos] = useState(0);
   const [dragging, setDragging] = useState<{ taskId: string; startX: number } | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [vpWidth, setVpWidth] = useState(600);
+
+  // Measure available timeline width (scroller width minus sidebar)
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const update = () => setVpWidth(Math.max(el.clientWidth - SIDEBAR_W, 200));
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!dragging) return;
@@ -102,21 +114,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   let timelineStart = baseStart;
   let timelineEnd = baseEnd;
 
-  if (view === "jour") {
-    const allDays = getDayStarts(baseStart, baseEnd);
-    let startIndex = 0;
-    if (allDays.length >= daysToShow) {
-      const todayIndex = allDays.findIndex(d => d.toDateString() === TODAY.toDateString());
-      if (todayIndex !== -1) {
-        startIndex = Math.max(0, Math.min(todayIndex - Math.floor(daysToShow / 2), allDays.length - daysToShow));
-      } else {
-        startIndex = Math.max(0, allDays.length - daysToShow);
-      }
-    }
-    const endIndex = Math.min(startIndex + daysToShow - 1, allDays.length - 1);
-    timelineStart = allDays[startIndex];
-    timelineEnd = allDays[endIndex];
-  } else if (view === "mois" && monthsToShow) {
+  if (view === "mois" && monthsToShow) {
     const allMonths = getMonthStarts(baseStart, baseEnd);
     if (allMonths.length > monthsToShow) {
       timelineStart = allMonths[0];
@@ -134,6 +132,12 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   const numPeriods = ticks.length;
   const percentPerPeriod = 100 / numPeriods;
 
+  // Width model: in "jour" mode render the FULL range at a fixed width per day
+  // (dayW derived from the slider) so it scrolls horizontally. Other modes fill the viewport.
+  const isDay = view === "jour";
+  const dayW = isDay ? Math.max(vpWidth / daysToShow, 28) : 0;
+  const timelineWidth = isDay ? numPeriods * dayW : vpWidth;
+
   const px = (date: Date): number => {
     const offsetMs = date.getTime() - timelineStart.getTime();
     const totalMs = timelineEnd.getTime() - timelineStart.getTime();
@@ -141,6 +145,15 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   };
 
   const todayX = px(TODAY);
+  const todayLeftPx = SIDEBAR_W + (todayX / 100) * timelineWidth;
+
+  // Center on today when entering "jour" mode or changing zoom
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollLeft = Math.max(0, todayLeftPx - el.clientWidth / 2);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [view, daysToShow, vpWidth, timelineWidth]);
 
   const togglePhase = (p: string) => {
     setCollapsed((prev) => {
@@ -169,7 +182,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   const isWkEnd = view === "jour";
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col flex-1 h-full w-full">
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col w-full" style={{ height: "calc(100vh - 18rem)" }}>
       {/* Header */}
       <div className="px-5 py-3 border-b border-slate-100 flex items-center justify-between flex-wrap gap-3 shrink-0">
         <div>
@@ -247,6 +260,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
 
       {/* Main scrollable */}
       <div
+        ref={scrollRef}
         className="flex-1 overflow-auto overflow-x-auto relative"
         style={{
           backgroundImage: "linear-gradient(to left, rgba(0,0,0,0.05), transparent 80%)",
@@ -255,20 +269,18 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
           backgroundRepeat: "no-repeat",
           backgroundSize: "50px 100%"
         }}
-        onScroll={(e) => setScrollPos((e.target as HTMLDivElement).scrollTop)}
       >
-        {/* TODAY line - unique vertical line across entire gantt */}
-        <div
-          className="absolute top-0 bottom-0 bg-red-500 z-10 pointer-events-none"
-          style={{
-            left: `${todayX}%`,
-            width: "2px",
-            opacity: 0.7,
-            boxShadow: "0 0 8px rgba(239, 68, 68, 0.4)"
-          }}
-        />
-
-        <div style={{ minWidth: "100%" }}>
+        <div className="relative" style={{ width: SIDEBAR_W + timelineWidth, minWidth: "100%" }}>
+          {/* TODAY line - unique vertical line spanning the whole content (scrolls horizontally with it) */}
+          <div
+            className="absolute top-0 bottom-0 bg-red-500 z-10 pointer-events-none"
+            style={{
+              left: todayLeftPx,
+              width: "2px",
+              opacity: 0.7,
+              boxShadow: "0 0 8px rgba(239, 68, 68, 0.4)"
+            }}
+          />
           {/* Timeline header */}
           <div className="sticky top-0 z-30 flex" style={{ height: HEAD_H }}>
             <div
@@ -278,7 +290,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
               <span className="text-[9px] font-semibold uppercase tracking-wider text-slate-500">Tâche</span>
             </div>
 
-            <div className="relative border-b border-slate-100 bg-white flex-1">
+            <div className="relative border-b border-slate-100 bg-white" style={{ width: timelineWidth }}>
               {/* Weekend shading */}
               {isWkEnd && ticks
                 .filter((t) => isWeekend(t))
@@ -294,12 +306,14 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
               {ticks.map((tick, i) => {
                 const x = px(tick);
                 const active = isActiveTick(tick);
+                const [line1, line2] = tickLabel(tick).split(" ");
                 return (
-                  <div key={i} className="absolute top-0 bottom-0 flex flex-col items-center justify-end pb-1" style={{ left: `${x}%`, transform: "translateX(-50%)" }}>
-                    <div className="w-px h-2.5 bg-slate-300" />
-                    <span className={`text-[10px] font-semibold mt-1.5 ${active ? "text-indigo-600 font-bold" : "text-slate-600"}`} style={{ transform: "rotate(-45deg)", transformOrigin: "bottom center", whiteSpace: "nowrap" }}>
-                      {tickLabel(tick)}
-                    </span>
+                  <div key={i} className="absolute top-0 bottom-0 flex flex-col items-center pt-1.5" style={{ left: `${x}%`, transform: "translateX(-50%)" }}>
+                    <div className="w-px h-2 bg-slate-300 mb-1" />
+                    <div className={`text-center leading-tight ${active ? "text-indigo-600" : "text-slate-600"}`}>
+                      <div className="text-[12px] font-bold">{line1}</div>
+                      {line2 && <div className="text-[9px] uppercase tracking-wide opacity-70">{line2}</div>}
+                    </div>
                   </div>
                 );
               })}
@@ -344,7 +358,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                     </button>
                   </div>
 
-                  <div className="relative border-b border-slate-100 bg-white flex-1">
+                  <div className="relative border-b border-slate-100 bg-white" style={{ width: timelineWidth }}>
                     {ticks.map((t, i) => (
                       <div key={i} className="absolute top-0 bottom-0 w-px bg-slate-200" style={{ left: `${px(t)}%` }} />
                     ))}
@@ -396,7 +410,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                         </div>
 
                         {/* Timeline cell */}
-                        <div className="relative flex-1 bg-white">
+                        <div className="relative bg-white" style={{ width: timelineWidth }}>
                           {/* Weekend shading */}
                           {isWkEnd && ticks
                             .filter((t) => isWeekend(t))
@@ -461,7 +475,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
           {/* Bottom padding */}
           <div className="flex" style={{ height: 48 }}>
             <div className="sticky left-0 bg-white border-r border-slate-100" style={{ width: SIDEBAR_W, minWidth: SIDEBAR_W }} />
-            <div className="relative" style={{ width: "100%" }}>
+            <div className="relative" style={{ width: timelineWidth }}>
               {ticks.map((t, i) => (
                 <div key={i} className="absolute top-0 bottom-0 w-px bg-slate-100" style={{ left: `${px(t)}%` }} />
               ))}
