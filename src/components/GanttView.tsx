@@ -55,8 +55,10 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [hovered, setHovered] = useState<string | null>(null);
   const [dragging, setDragging] = useState<{ taskId: string; startX: number } | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [vpWidth, setVpWidth] = useState(600);
+  const [ganttHeight, setGanttHeight] = useState<number>(0);
 
   // Measure available timeline width (scroller width minus sidebar)
   useEffect(() => {
@@ -67,6 +69,33 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
     const ro = new ResizeObserver(update);
     ro.observe(el);
     return () => ro.disconnect();
+  }, []);
+
+  // Measure available height: fill the viewport from the Gantt's top edge.
+  // Robust against changes in the content above (title/filters) instead of a hard-coded offset.
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const update = () => {
+      const top = el.getBoundingClientRect().top;
+      // Sum every ancestor's bottom padding (the page wrapper uses lg:p-8) so the
+      // whole Gantt fits with no outer page scroll, whatever the breakpoint.
+      let padBelow = 0;
+      let node: HTMLElement | null = el;
+      while (node && node !== document.body) {
+        padBelow += parseFloat(getComputedStyle(node).paddingBottom) || 0;
+        node = node.parentElement;
+      }
+      setGanttHeight(Math.max(window.innerHeight - top - padBelow - 8, 320));
+    };
+    update();
+    window.addEventListener("resize", update);
+    // Re-measure on next frames in case layout above settles after mount
+    const t = setTimeout(update, 150);
+    return () => {
+      window.removeEventListener("resize", update);
+      clearTimeout(t);
+    };
   }, []);
 
   useEffect(() => {
@@ -182,7 +211,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   const isWkEnd = view === "jour";
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col w-full" style={{ height: "calc(100vh - 18rem)" }}>
+    <div ref={rootRef} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col w-full" style={{ height: ganttHeight ? ganttHeight : "calc(100vh - 18rem)" }}>
       {/* Header */}
       <div className="px-5 py-3 border-b border-slate-100 flex items-center justify-between flex-wrap gap-3 shrink-0">
         <div>
