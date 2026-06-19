@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo } from "react";
 import { Task, TaskStatus } from "../data";
 import { User } from "../store";
 import { cn } from "../utils/cn";
@@ -59,19 +59,6 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   const [monthsToShow, setMonthsToShow] = useState<3 | 4 | null>(null);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [hovered, setHovered] = useState<string | null>(null);
-
-  // Refs for horizontal scroll synchronization
-  const tasksScrollRef = useRef<HTMLDivElement>(null);
-  const horizontalScrollBarRef = useRef<HTMLDivElement>(null);
-
-  const handleHorizontalScroll = (e: React.UIEvent<HTMLDivElement>, source: 'tasks' | 'scrollbar') => {
-    const scrollLeft = (e.currentTarget as HTMLDivElement).scrollLeft;
-    if (source === 'tasks' && horizontalScrollBarRef.current) {
-      horizontalScrollBarRef.current.scrollLeft = scrollLeft;
-    } else if (source === 'scrollbar' && tasksScrollRef.current) {
-      tasksScrollRef.current.scrollLeft = scrollLeft;
-    }
-  };
 
   if (tasks.length === 0) {
     return <div className="text-center py-12 text-slate-400">Aucune tâche</div>;
@@ -239,16 +226,8 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
         </div>
       )}
 
-      {/* Single scrollable container for header + tasks - scrollbar will be shown separately */}
-      <div
-        ref={tasksScrollRef}
-        className="flex-1 overflow-auto [&::-webkit-scrollbar]:hidden pb-24"
-        onScroll={(e) => handleHorizontalScroll(e, 'tasks')}
-        style={{
-          scrollbarWidth: 'none', // Firefox
-          msOverflowStyle: 'none', // IE/Edge
-        }}
-      >
+      {/* Single scrollable container for header + tasks */}
+      <div className="flex-1 overflow-auto pb-16">
         <div style={{ minWidth: "100%" }}>
           {/* Timeline header row — sticky top */}
           <div className="sticky top-0 z-30 flex" style={{ height: HEAD_H }}>
@@ -456,17 +435,6 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Horizontal scrollbar - fixed just above legend */}
-      <div
-        ref={horizontalScrollBarRef}
-        className="fixed bottom-16 left-0 right-0 overflow-x-auto overflow-y-hidden bg-white border-t border-slate-100 h-4 z-30"
-        onScroll={(e) => handleHorizontalScroll(e, 'scrollbar')}
-        style={{ scrollbarHeight: 'thin' }}
-      >
-        {/* Invisible content to trigger scrollbar - width matches tasks content */}
-        <div style={{ minWidth: '100%', height: '1px' }} />
       </div>
 
       {/* Legend - fixed at screen bottom */}
