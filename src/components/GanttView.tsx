@@ -86,7 +86,8 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   };
 
   const todayX = px(TODAY);
-  const isWkEnd = view === "jour";
+  // Weekends always visible (not just in jour view)
+  const isWkEnd = true;
 
   // Toggle phase collapse
   const togglePhase = (p: string) => {
