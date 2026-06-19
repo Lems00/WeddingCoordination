@@ -143,7 +143,7 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col flex-1 h-full">
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col flex-1 h-full w-full">
       {/* Header */}
       <div className="px-5 py-3 border-b border-slate-100 flex items-center justify-between flex-wrap gap-3 shrink-0">
         <div>
@@ -227,8 +227,8 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
       )}
 
       {/* Single scrollable container for header + tasks */}
-      {/* Scrollbars configurés: horizontal + vertical confinés au Gantt */}
-      <div className="flex-1 overflow-auto pb-12" style={{ scrollBehavior: "smooth" }}>
+      {/* Scrollbars permanents: vertical + horizontal toujours visibles */}
+      <div className="flex-1 pb-12" style={{ overflowY: "scroll", overflowX: "scroll", scrollBehavior: "smooth" }}>
         <div style={{ minWidth: "100%" }}>
           {/* Timeline header row — sticky top */}
           <div className="sticky top-0 z-30 flex" style={{ height: HEAD_H }}>
