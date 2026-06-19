@@ -403,12 +403,12 @@ export default function GanttView({ tasks, users, currentProject }: GanttViewPro
                             <div key={i} className="absolute top-0 bottom-0 w-px bg-slate-100" style={{ left: `${px(t)}%` }} />
                           ))}
 
-                          {/* Task bar */}
+                          {/* Task bar - visible width minimum */}
                           <div
                             className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1.5 overflow-hidden rounded-full shadow-sm transition-all duration-150"
                             style={{
                               left: `${barX}%`,
-                              width: `${barW}%`,
+                              width: `max(${barW}%, 24px)`,
                               height: 26,
                               backgroundColor: sm.color,
                               opacity: isDimmed ? 0.3 : 0.88,
