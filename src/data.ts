@@ -372,11 +372,11 @@ const RAW_DEFAULT_TASKS: Task[] = [
 
 // Responsables réels par tâche — extraits de la base D1 (colonne responsible_name),
 // source de vérité de l'API. Les libellés alimentent ASSIGNEE_RULES (badges/couleurs).
-// J08 et P15 n'ont pas de responsable en base : laissés vides (à assigner).
+// P15 et J08 absents de la base : assignés à « Coordinateur » sur demande utilisateur.
 export const TASK_RESPONSIBLES: Record<string, string> = {
   P01: "Coordinateur", P02: "Coordinateur", P03: "Coordinateur", P04: "Coordinateur", P05: "Coordinateur",
   P06: "Coordinateur", P07: "Coordinateur", P08: "Coordinateur", P09: "Coordinateur", P10: "Coordinateur",
-  P11: "Mariés", P12: "Coordinateur", P13: "Mariés", P14: "Mariés", P16: "Coordinateur",
+  P11: "Mariés", P12: "Coordinateur", P13: "Mariés", P14: "Mariés", P15: "Coordinateur", P16: "Coordinateur",
   P17: "Coordinateur", P18: "Coordinateur", P19: "Coordinateur", P20: "Coordinateur", P21: "Coordinateur",
   P22: "Mariés", P23: "Coordinateur", P24: "Mariés", P25: "Mariés", P26: "Coordinateur",
   P27: "Coordinateur", P28: "Coordinateur", P29: "Coordinateur", P30: "Coordinateur", P31: "Coordinateur",
@@ -386,7 +386,7 @@ export const TASK_RESPONSIBLES: Record<string, string> = {
   V01: "Jennya", V02: "Jennya", V03: "Prestataire lumières", V04: "Prestataire lumières", V05: "Prestataire lumières",
   V06: "Album Music", V07: "Album Music", V08: "Album Music", V09: "Coordinateur", V10: "Coordinateur",
   J01: "Vazaha", J02: "Vazaha", J03: "Vazaha", J04: "Vazaha", J05: "Vazaha",
-  J06: "Coordinateur", J07: "Équipe régie", J09: "Équipe régie", J10: "Jennya",
+  J06: "Coordinateur", J07: "Équipe régie", J08: "Coordinateur", J09: "Équipe régie", J10: "Jennya",
   J11: "Mi Rec Production", J12: "Mi Rec Production", J13: "Mi Rec Production",
   J14: "Prestataire FX", J15: "Prestataire FX", J16: "MRE", J17: "MRE",
   J18: "Prestataire pâtisserie", J19: "Équipe coordination", J20: "Coordinateur", J21: "Coordinateur",
