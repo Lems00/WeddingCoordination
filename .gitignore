@@ -26,3 +26,6 @@ dist/
 
 # Build
 .turbo/
+
+# graphify (généré, régénérable avec /graphify)
+graphify-out/
