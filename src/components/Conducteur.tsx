@@ -1017,8 +1017,8 @@ function PhaseModal({ phase, nextSortOrder, vendors, users, onClose, onSave }: {
   return (
     <Modal title={phase ? "Modifier la phase" : "Nouvelle phase"} onClose={onClose} wide>
       <div className="space-y-3">
-        <div className="grid grid-cols-3 gap-3">
-          <div className="col-span-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="sm:col-span-2">
             <Field label="Titre de la phase">
               <input className="input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
             </Field>
@@ -1062,7 +1062,7 @@ function PhaseModal({ phase, nextSortOrder, vendors, users, onClose, onSave }: {
               </div>
             ))}
           </div>
-          <div className="grid grid-cols-[auto_1fr_1fr_auto] gap-2 items-end">
+          <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr_1fr_auto] gap-2 items-end">
             <select className="input" value={newResp.type} onChange={(e) => setNewResp({ ...newResp, type: e.target.value as any, ref_id: "" })}>
               <option value="vendor">Prestataire</option>
               <option value="user">Utilisateur</option>
