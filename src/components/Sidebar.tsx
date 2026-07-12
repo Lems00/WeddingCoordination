@@ -3,7 +3,6 @@ import {
   ListTodo,
   Users,
   Wallet,
-  CalendarHeart,
   LogOut,
   Calendar,
   MapPin,
@@ -17,6 +16,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
+import Logo from "./Logo";
 import { useApp } from "../store";
 import { cn } from "../utils/cn";
 import { PROJECT_STATUS_LABELS } from "../data";
@@ -75,8 +75,8 @@ export default function Sidebar({ currentPage, onNavigate, collapsed = false, on
       <aside className="flex flex-col w-20 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white h-screen sticky top-0 items-center">
         {/* Logo + expand button */}
         <div className="pt-6 pb-4 border-b border-white/5 w-full flex flex-col items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <CalendarHeart className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-lg">
+            <Logo className="w-full h-full" />
           </div>
           <button
             onClick={onToggleCollapse}
@@ -161,8 +161,8 @@ export default function Sidebar({ currentPage, onNavigate, collapsed = false, on
       {/* Logo + collapse button */}
       <div className="px-6 pt-7 pb-5 border-b border-white/5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <CalendarHeart className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-lg">
+            <Logo className="w-full h-full" />
           </div>
           <div className="flex-1">
             <h1 className="font-bold text-lg tracking-tight">EventFlow</h1>

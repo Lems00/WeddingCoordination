@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useApp } from "../store";
-import { Heart, Lock, User, Sparkles } from "lucide-react";
+import { Lock, User, Sparkles } from "lucide-react";
+import Logo from "./Logo";
 
 export default function Login() {
   const { login } = useApp();
@@ -35,13 +36,37 @@ export default function Login() {
         <div className="bg-white rounded-3xl shadow-2xl shadow-indigo-100/60 border border-slate-100 overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 px-8 py-10 text-center relative">
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-4 left-8 text-6xl">♥</div>
-              <div className="absolute bottom-4 right-8 text-4xl">✦</div>
-              <div className="absolute top-1/2 right-1/4 text-3xl">♡</div>
+            <div className="absolute inset-0 overflow-hidden opacity-20">
+              <div
+                className="absolute"
+                style={{
+                  top: "-30px", left: "-10px", width: "160px", height: "260px",
+                  background: "linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%)",
+                  clipPath: "polygon(46% 0%, 54% 0%, 100% 100%, 0% 100%)",
+                  transform: "rotate(-18deg)",
+                }}
+              />
+              <div
+                className="absolute"
+                style={{
+                  bottom: "-40px", right: "10px", width: "120px", height: "220px",
+                  background: "linear-gradient(0deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%)",
+                  clipPath: "polygon(46% 0%, 54% 0%, 100% 100%, 0% 100%)",
+                  transform: "rotate(14deg)",
+                }}
+              />
+              <div
+                className="absolute"
+                style={{
+                  top: "-20px", right: "60px", width: "90px", height: "200px",
+                  background: "linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 100%)",
+                  clipPath: "polygon(46% 0%, 54% 0%, 100% 100%, 0% 100%)",
+                  transform: "rotate(24deg)",
+                }}
+              />
             </div>
-            <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-sm mb-4 shadow-lg">
-              <Heart className="w-8 h-8 text-white" fill="currentColor" />
+            <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white p-2.5 mb-4 shadow-lg">
+              <Logo className="w-full h-full" />
             </div>
             <h1 className="text-2xl font-bold text-white tracking-tight">EventFlow Pro</h1>
             <p className="text-indigo-100 mt-1 text-sm">Gestion d'événements pour professionnels</p>
