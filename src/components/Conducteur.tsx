@@ -835,11 +835,11 @@ function PhaseCard({ phase, canEdit, onToggle, onEdit, onDelete }: {
             </div>
           </div>
           {canEdit && (
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition print:hidden">
-              <button onClick={onEdit} aria-label="Modifier l'événement" title="Modifier" className="p-1.5 rounded hover:bg-slate-100 text-slate-500">
+            <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition print:hidden flex-shrink-0">
+              <button onClick={onEdit} aria-label="Modifier la phase" title="Modifier" className="p-1.5 rounded hover:bg-slate-100 text-slate-500">
                 <Edit2 className="w-4 h-4" />
               </button>
-              <button onClick={onDelete} aria-label="Supprimer l'événement" title="Supprimer" className="p-1.5 rounded hover:bg-red-50 text-red-500">
+              <button onClick={onDelete} aria-label="Supprimer la phase" title="Supprimer" className="p-1.5 rounded hover:bg-red-50 text-red-500">
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
