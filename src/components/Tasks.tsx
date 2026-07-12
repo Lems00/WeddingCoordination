@@ -517,15 +517,55 @@ function EditTaskModal({ task, users, onSave, onCancel }: { task: Task; users: U
 //  ADD TASK MODAL
 // ============================================================================
 
+// Préfixe conventionnel par phase — cohérent avec les données existantes
+// (Préparation → P, Veille → V, Jour J → J).
+function prefixForPhase(phase: string): string {
+  if (phase === "Veille") return "V";
+  if (phase === "Jour J") return "J";
+  return "P";
+}
+
+// Suggère le premier ID libre : comble d'abord les trous dans la
+// numérotation existante (ex: P15 si P14 et P16 existent mais pas P15),
+// sinon repart du prochain numéro après le maximum actuel.
+function suggestNextTaskId(existingIds: string[], phase: string): string {
+  const prefix = prefixForPhase(phase);
+  const pattern = new RegExp(`^${prefix}(\\d+)$`);
+  const nums = existingIds
+    .map((id) => {
+      const m = id.match(pattern);
+      return m ? parseInt(m[1], 10) : null;
+    })
+    .filter((n): n is number => n !== null)
+    .sort((a, b) => a - b);
+
+  let next = 1;
+  for (const n of nums) {
+    if (n === next) next++;
+    else if (n > next) break;
+  }
+  return `${prefix}${String(next).padStart(2, "0")}`;
+}
+
 function AddTaskModal({ onClose, onSave, existingIds, users }: {
   onClose: () => void; onSave: (t: Task) => void; existingIds: string[]; users: User[];
 }) {
   const { currentProjectId } = useApp();
+  const [idTouchedByUser, setIdTouchedByUser] = useState(false);
   const [form, setForm] = useState<Partial<Task>>({
-    id: "", phase: "Préparation", category: "Coordination", task: "",
+    id: suggestNextTaskId(existingIds, "Préparation"), phase: "Préparation", category: "Coordination", task: "",
     duration: "1 jour", start_date: "2026-06-02", end_date: "2026-06-02",
     predecessor: "", responsible: "Coordinateur", responsible_user_id: null, status: "À faire",
   });
+
+  const handlePhaseChange = (phase: string) => {
+    setForm((f) => ({
+      ...f,
+      phase,
+      // Ne recalcule l'ID suggéré que si l'utilisateur ne l'a pas modifié à la main.
+      id: idTouchedByUser ? f.id : suggestNextTaskId(existingIds, phase),
+    }));
+  };
 
   const handleSave = () => {
     if (!form.id || !form.task) { alert("ID et nom requis"); return; }
@@ -555,9 +595,16 @@ function AddTaskModal({ onClose, onSave, existingIds, users }: {
         </div>
         <div className="p-6 space-y-3">
           <div className="grid grid-cols-2 gap-3">
-            <Field label="ID"><input className="input" value={form.id || ""} onChange={(e) => setForm({ ...form, id: e.target.value })} placeholder="P44" /></Field>
+            <Field label="ID">
+              <input
+                className="input"
+                value={form.id || ""}
+                onChange={(e) => { setIdTouchedByUser(true); setForm({ ...form, id: e.target.value }); }}
+                placeholder="P44"
+              />
+            </Field>
             <Field label="Phase">
-              <select className="input" value={form.phase} onChange={(e) => setForm({ ...form, phase: e.target.value })}>
+              <select className="input" value={form.phase} onChange={(e) => handlePhaseChange(e.target.value)}>
                 {PHASES.map((p) => <option key={p}>{p}</option>)}
               </select>
             </Field>
