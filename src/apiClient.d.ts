@@ -7,6 +7,7 @@ import type {
   Notification,
   TaskStatus,
 } from "./data";
+import type { ConducteurJour, ConducteurPhase } from "./components/Conducteur";
 
 export function setToken(token: string | null): void;
 export function getToken(): string | null;
@@ -53,4 +54,14 @@ export const api: {
   createNotification(n: Notification): Promise<{ id: string; ok: boolean }>;
   markNotificationRead(id: string): Promise<{ ok: boolean }>;
   markAllNotificationsRead(userId: string): Promise<{ ok: boolean }>;
+
+  listConducteur(projectId: string): Promise<ConducteurJour[]>;
+  createJour(projectId: string, jour: ConducteurJour): Promise<{ id: string; ok: boolean }>;
+  updateJour(jour: ConducteurJour): Promise<{ ok: boolean }>;
+  deleteJour(id: string): Promise<{ ok: boolean }>;
+
+  createPhase(jourId: string, phase: ConducteurPhase): Promise<{ id: string; ok: boolean }>;
+  updatePhase(phase: ConducteurPhase): Promise<{ ok: boolean }>;
+  updatePhaseCompleted(id: string, completed: boolean): Promise<{ ok: boolean }>;
+  deletePhase(id: string): Promise<{ ok: boolean }>;
 };

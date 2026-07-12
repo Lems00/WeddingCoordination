@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useApp } from "../store";
+import { api } from "../apiClient";
 import { cn } from "../utils/cn";
 import {
   Plus,
@@ -13,6 +14,8 @@ import {
   CheckCircle2,
   AlertCircle,
   Sparkles,
+  Download,
+  Upload,
 } from "lucide-react";
 
 // ============================================================================
@@ -73,6 +76,8 @@ function parseTimeToMinutes(value: string): number {
 
 // Trie par heure de début réelle ; en cas d'égalité (ou heures manquantes des
 // deux côtés), retombe sur sort_order pour un ordre stable et modifiable.
+// Réservé aux phases : elles vivent toutes dans le même jour, donc comparer
+// seulement l'heure suffit.
 function compareByTime<T extends { sort_order: number }>(
   getTime: (item: T) => string
 ): (a: T, b: T) => number {
@@ -80,6 +85,18 @@ function compareByTime<T extends { sort_order: number }>(
     const diff = parseTimeToMinutes(getTime(a)) - parseTimeToMinutes(getTime(b));
     return diff !== 0 ? diff : a.sort_order - b.sort_order;
   };
+}
+
+// Trie les "jours" par date réelle puis heure de début. Contrairement aux
+// phases (toutes dans le même jour), un conducteur peut s'étaler sur
+// plusieurs dates (ex: Vodiondry le 15, Jour du Mariage le 16) — comparer
+// uniquement l'heure de début ignorerait la date et inverserait l'ordre
+// des jours (ex: 08:00 le 16 passerait avant 18:00 le 15).
+function compareJoursByDateTime(a: ConducteurJour, b: ConducteurJour): number {
+  const dateDiff = (a.date || "").localeCompare(b.date || "");
+  if (dateDiff !== 0) return dateDiff;
+  const diff = parseTimeToMinutes(a.time_start) - parseTimeToMinutes(b.time_start);
+  return diff !== 0 ? diff : a.sort_order - b.sort_order;
 }
 
 // ============================================================================
@@ -286,12 +303,16 @@ const DEFAULT_CONDUCTEUR: ConducteurJour[] = [
   },
 ];
 
+// Bascule localStorage (démo) <-> API D1, comme dans store.tsx.
+const USE_API = import.meta.env.VITE_USE_API === "true";
+
 // ============================================================================
 //  Hook persistence
 // ============================================================================
 function useConducteur(projectId: string) {
   const key = `${STORAGE_KEY}_${projectId}`;
-  const [jours, setJours] = useState<ConducteurJour[]>(() => {
+  const [jours, setJoursState] = useState<ConducteurJour[]>(() => {
+    if (USE_API) return [];
     try {
       const raw = localStorage.getItem(key);
       if (raw) return JSON.parse(raw);
@@ -299,12 +320,21 @@ function useConducteur(projectId: string) {
     return DEFAULT_CONDUCTEUR;
   });
 
-  const save = (next: ConducteurJour[]) => {
-    setJours(next);
-    localStorage.setItem(key, JSON.stringify(next));
+  useEffect(() => {
+    if (!USE_API || !projectId) return;
+    api.listConducteur(projectId).then(setJoursState).catch(() => {});
+  }, [projectId]);
+
+  // Met à jour l'état local. En mode démo, persiste aussi en localStorage ;
+  // en mode API, la persistance passe par les appels api.* dédiés (voir les
+  // fonctions addJour/updatePhase/etc. dans le composant principal) —
+  // écrire ici en plus referait un appel générique sans savoir quoi sauver.
+  const setJours = (next: ConducteurJour[]) => {
+    setJoursState(next);
+    if (!USE_API) localStorage.setItem(key, JSON.stringify(next));
   };
 
-  return { jours, setJours: save };
+  return { jours, setJours };
 }
 
 // ============================================================================
@@ -316,12 +346,13 @@ export default function Conducteur() {
   const [showJourModal, setShowJourModal] = useState(false);
   const [showPhaseModal, setShowPhaseModal] = useState<{ jourId: string; phase: ConducteurPhase | null } | null>(null);
   const [editingJour, setEditingJour] = useState<ConducteurJour | null>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
 
   if (!currentProject) {
     return <div className="text-center py-12 text-slate-500">Aucun projet sélectionné</div>;
   }
 
-  const sortedJours = [...jours].sort(compareByTime((j) => j.time_start));
+  const sortedJours = [...jours].sort(compareJoursByDateTime);
 
   const totalPhases = jours.reduce((s, j) => s + j.phases.length, 0);
   const completedPhases = jours.reduce((s, j) => s + j.phases.filter((p) => p.completed).length, 0);
@@ -331,28 +362,48 @@ export default function Conducteur() {
 
   const addJour = (jour: ConducteurJour) => {
     setJours([...jours, jour]);
+    if (USE_API) api.createJour(currentProjectId, jour).catch(() => {});
   };
 
   const deleteJour = (jourId: string) => {
     if (!confirm("Supprimer cet événement du conducteur ? Toutes les phases seront perdues.")) return;
     const next = jours.filter((j) => j.id !== jourId);
     setJours(next);
+    if (USE_API) api.deleteJour(jourId).catch(() => {});
   };
 
   const updatePhase = (jourId: string, phaseId: string, patch: Partial<ConducteurPhase>) => {
+    let updatedPhase: ConducteurPhase | null = null;
     setJours(
-      jours.map((j) =>
-        j.id === jourId
-          ? { ...j, phases: j.phases.map((p) => (p.id === phaseId ? { ...p, ...patch } : p)) }
-          : j
-      )
+      jours.map((j) => {
+        if (j.id !== jourId) return j;
+        return {
+          ...j,
+          phases: j.phases.map((p) => {
+            if (p.id !== phaseId) return p;
+            updatedPhase = { ...p, ...patch };
+            return updatedPhase;
+          }),
+        };
+      })
     );
+    if (USE_API && updatedPhase) {
+      const patchKeys = Object.keys(patch);
+      // Bascule "terminé" seule (clic sur la checkbox) -> appel léger, sans
+      // repasser toutes les actions/responsables pour rien.
+      if (patchKeys.length === 1 && patchKeys[0] === "completed") {
+        api.updatePhaseCompleted(phaseId, !!patch.completed).catch(() => {});
+      } else {
+        api.updatePhase(updatedPhase).catch(() => {});
+      }
+    }
   };
 
   const addPhase = (jourId: string, phase: ConducteurPhase) => {
     setJours(
       jours.map((j) => (j.id === jourId ? { ...j, phases: [...j.phases, phase] } : j))
     );
+    if (USE_API) api.createPhase(jourId, phase).catch(() => {});
   };
 
   const deletePhase = (jourId: string, phaseId: string) => {
@@ -362,6 +413,51 @@ export default function Conducteur() {
         j.id === jourId ? { ...j, phases: j.phases.filter((p) => p.id !== phaseId) } : j
       )
     );
+    if (USE_API) api.deletePhase(phaseId).catch(() => {});
+  };
+
+  // Exporte le conducteur actuellement chargé (localStorage ou API) en fichier
+  // JSON téléchargeable — utile pour migrer des données saisies dans un
+  // navigateur (mode démo) vers la base réelle sur un autre navigateur/poste.
+  const handleExportJson = () => {
+    const blob = new Blob([JSON.stringify(jours, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `conducteur_${currentProjectId}_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportJsonFile = async (file: File) => {
+    let imported: ConducteurJour[];
+    try {
+      imported = JSON.parse(await file.text());
+    } catch {
+      alert("Fichier JSON invalide.");
+      return;
+    }
+    if (!Array.isArray(imported)) {
+      alert("Format invalide : un tableau de jours (comme exporté par « Exporter ») est attendu.");
+      return;
+    }
+    if (
+      !confirm(
+        `Importer ${imported.length} jour(s) (${imported.reduce((s, j) => s + j.phases.length, 0)} phase(s)) ? ` +
+          `Ceci remplace le conducteur actuellement affiché${USE_API ? " et l'enregistre en base" : ""}.`
+      )
+    )
+      return;
+
+    setJours(imported);
+    if (USE_API) {
+      for (const jour of imported) {
+        await api.createJour(currentProjectId, jour).catch(() => {});
+        for (const phase of jour.phases) {
+          await api.createPhase(jour.id, phase).catch(() => {});
+        }
+      }
+    }
   };
 
   return (
@@ -389,6 +485,37 @@ export default function Conducteur() {
             <Printer className="w-4 h-4" />
             Imprimer
           </button>
+          <button
+            onClick={handleExportJson}
+            title="Télécharger ce conducteur en fichier JSON"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          >
+            <Download className="w-4 h-4" />
+            Exporter
+          </button>
+          {canEdit && (
+            <>
+              <input
+                ref={importInputRef}
+                type="file"
+                accept="application/json"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleImportJsonFile(file);
+                  e.target.value = "";
+                }}
+              />
+              <button
+                onClick={() => importInputRef.current?.click()}
+                title="Importer un conducteur depuis un fichier JSON exporté"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              >
+                <Upload className="w-4 h-4" />
+                Importer
+              </button>
+            </>
+          )}
           {canEdit && (
             <button
               onClick={() => { setEditingJour(null); setShowJourModal(true); }}
@@ -532,6 +659,7 @@ export default function Conducteur() {
           onSave={(j) => {
             if (editingJour) {
               setJours(jours.map((x) => (x.id === j.id ? j : x)));
+              if (USE_API) api.updateJour(j).catch(() => {});
             } else {
               addJour(j);
             }

@@ -214,6 +214,7 @@ CREATE TABLE IF NOT EXISTS conducteur_phases (
   time_slot       TEXT NOT NULL,              -- "14:00 — 15:00"
   note            TEXT,
   custom_html     TEXT,                       -- menu, etc. (HTML)
+  completed       INTEGER DEFAULT 0,          -- 0/1 — coché "terminé" côté conducteur
   sort_order      INTEGER DEFAULT 0,
   created_at      TEXT DEFAULT (datetime('now')),
   FOREIGN KEY (jour_id) REFERENCES conducteur_jours(id) ON DELETE CASCADE

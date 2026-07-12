@@ -242,6 +242,27 @@ export const api = {
       method: "PATCH",
       body: JSON.stringify({ markAll: true, user_id: userId }),
     }),
+
+  // --- Conducteur (jours + phases) ---
+  // GET renvoie déjà l'arborescence au format front (ConducteurJour[]) — pas de mapping ici.
+  listConducteur: (projectId) =>
+    request(`/conducteurs?project_id=${encodeURIComponent(projectId)}`).then((d) => d.jours || []),
+  createJour: (projectId, jour) =>
+    request("/conducteurs", { method: "POST", body: JSON.stringify({ ...jour, project_id: projectId }) }),
+  updateJour: (jour) =>
+    request("/conducteurs", { method: "PUT", body: JSON.stringify(jour) }),
+  deleteJour: (id) => request(`/conducteurs?id=${encodeURIComponent(id)}`, { method: "DELETE" }),
+
+  createPhase: (jourId, phase) =>
+    request("/conducteur-phases", { method: "POST", body: JSON.stringify({ ...phase, jour_id: jourId }) }),
+  updatePhase: (phase) =>
+    request("/conducteur-phases", { method: "PUT", body: JSON.stringify(phase) }),
+  updatePhaseCompleted: (id, completed) =>
+    request("/conducteur-phases", {
+      method: "PUT",
+      body: JSON.stringify({ id, completedOnly: completed }),
+    }),
+  deletePhase: (id) => request(`/conducteur-phases?id=${encodeURIComponent(id)}`, { method: "DELETE" }),
 };
 
 // Exportés pour les tests unitaires (couche de mapping pure, sans réseau).
