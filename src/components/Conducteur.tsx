@@ -60,6 +60,28 @@ export interface ConducteurJour {
 
 const STORAGE_KEY = "weddingplan_conducteur_v1";
 
+// Extrait "HH:MM" (le premier trouvé) d'une chaîne libre type "14:00 — 15:00"
+// et le convertit en minutes depuis minuit, pour trier chronologiquement.
+// Renvoie Infinity si aucune heure n'est trouvée (l'élément passe en fin de liste).
+function parseTimeToMinutes(value: string): number {
+  const match = value.match(/(\d{1,2}):(\d{2})/);
+  if (!match) return Infinity;
+  const hours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+  return hours * 60 + minutes;
+}
+
+// Trie par heure de début réelle ; en cas d'égalité (ou heures manquantes des
+// deux côtés), retombe sur sort_order pour un ordre stable et modifiable.
+function compareByTime<T extends { sort_order: number }>(
+  getTime: (item: T) => string
+): (a: T, b: T) => number {
+  return (a, b) => {
+    const diff = parseTimeToMinutes(getTime(a)) - parseTimeToMinutes(getTime(b));
+    return diff !== 0 ? diff : a.sort_order - b.sort_order;
+  };
+}
+
 // ============================================================================
 //  Données de démonstration (Madagascar — 3 cérémonies)
 // ============================================================================
@@ -299,7 +321,7 @@ export default function Conducteur() {
     return <div className="text-center py-12 text-slate-500">Aucun projet sélectionné</div>;
   }
 
-  const sortedJours = [...jours].sort((a, b) => a.sort_order - b.sort_order);
+  const sortedJours = [...jours].sort(compareByTime((j) => j.time_start));
 
   const totalPhases = jours.reduce((s, j) => s + j.phases.length, 0);
   const completedPhases = jours.reduce((s, j) => s + j.phases.filter((p) => p.completed).length, 0);
@@ -468,7 +490,7 @@ export default function Conducteur() {
 
                       {jour.phases
                         .slice()
-                        .sort((a, b) => a.sort_order - b.sort_order)
+                        .sort(compareByTime((p) => p.time_slot))
                         .map((phase) => (
                           <PhaseCard
                             key={phase.id}
@@ -505,6 +527,7 @@ export default function Conducteur() {
       {showJourModal && (
         <JourModal
           jour={editingJour}
+          nextSortOrder={Math.max(0, ...jours.map((j) => j.sort_order)) + 1}
           onClose={() => { setShowJourModal(false); setEditingJour(null); }}
           onSave={(j) => {
             if (editingJour) {
@@ -521,6 +544,9 @@ export default function Conducteur() {
       {showPhaseModal && (
         <PhaseModal
           phase={showPhaseModal.phase}
+          nextSortOrder={
+            Math.max(0, ...(jours.find((j) => j.id === showPhaseModal.jourId)?.phases.map((p) => p.sort_order) || [0])) + 1
+          }
           vendors={vendors}
           users={users}
           onClose={() => setShowPhaseModal(null)}
@@ -744,8 +770,9 @@ function PhaseCard({ phase, canEdit, onToggle, onEdit, onDelete }: {
 //  Modals
 // ============================================================================
 
-function JourModal({ jour, onClose, onSave }: {
+function JourModal({ jour, nextSortOrder, onClose, onSave }: {
   jour: ConducteurJour | null;
+  nextSortOrder: number;
   onClose: () => void;
   onSave: (j: ConducteurJour) => void;
 }) {
@@ -759,7 +786,7 @@ function JourModal({ jour, onClose, onSave }: {
     guest_count: 0,
     notes: "",
     phases: [],
-    sort_order: 10,
+    sort_order: nextSortOrder,
   });
 
   return (
@@ -791,8 +818,9 @@ function JourModal({ jour, onClose, onSave }: {
   );
 }
 
-function PhaseModal({ phase, vendors, users, onClose, onSave }: {
+function PhaseModal({ phase, nextSortOrder, vendors, users, onClose, onSave }: {
   phase: ConducteurPhase | null;
+  nextSortOrder: number;
   vendors: any[];
   users: any[];
   onClose: () => void;
@@ -807,7 +835,7 @@ function PhaseModal({ phase, vendors, users, onClose, onSave }: {
     custom_html: "",
     responsables: [],
     completed: false,
-    sort_order: 10,
+    sort_order: nextSortOrder,
   });
   const [actionsText, setActionsText] = useState(phase?.actions.map((a) => a.content).join("\n") || "");
   const [newResp, setNewResp] = useState<{ type: "vendor" | "user"; ref_id: string; scope: string }>({ type: "vendor", ref_id: "", scope: "" });
