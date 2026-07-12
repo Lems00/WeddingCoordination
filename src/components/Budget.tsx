@@ -153,17 +153,17 @@ export default function Budget() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-slate-900">{e.label}</p>
-                <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
+                <div className="flex flex-wrap items-center gap-2 mt-0.5 text-xs text-slate-500">
                   <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600">{e.category}</span>
                   <span>{new Date(e.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}</span>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="font-bold text-slate-900">{formatAriary(e.amount)}</p>
+              <div className="text-right flex-shrink-0">
+                <p className="font-bold text-slate-900 whitespace-nowrap">{formatAriary(e.amount)}</p>
                 <p className={cn("text-xs", e.paid ? "text-emerald-600" : "text-amber-600")}>{e.paid ? "Payé" : "En attente"}</p>
               </div>
               {canEdit && (
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                <div className="flex flex-col sm:flex-row items-center gap-1 flex-shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition">
                   <button
                     onClick={() => setEditingExpense(e.id)}
                     className="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50"
