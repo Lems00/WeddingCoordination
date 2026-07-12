@@ -309,29 +309,40 @@ const USE_API = import.meta.env.VITE_USE_API === "true";
 // ============================================================================
 //  Hook persistence
 // ============================================================================
+function readLocalConducteur(key: string): ConducteurJour[] | null {
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return null;
+}
+
 function useConducteur(projectId: string) {
   const key = `${STORAGE_KEY}_${projectId}`;
   const [jours, setJoursState] = useState<ConducteurJour[]>(() => {
-    if (USE_API) return [];
-    try {
-      const raw = localStorage.getItem(key);
-      if (raw) return JSON.parse(raw);
-    } catch {}
-    return DEFAULT_CONDUCTEUR;
+    return readLocalConducteur(key) ?? (USE_API ? [] : DEFAULT_CONDUCTEUR);
   });
 
   useEffect(() => {
     if (!USE_API || !projectId) return;
+    // Ne va chercher l'API QUE si ce navigateur n'a aucune donnée locale —
+    // pour ne jamais écraser silencieusement des données saisies localement
+    // (ex: sur un téléphone) tant qu'elles n'ont pas été explicitement
+    // exportées/importées vers la base via les boutons dédiés.
+    if (readLocalConducteur(key)) return;
     api.listConducteur(projectId).then(setJoursState).catch(() => {});
   }, [projectId]);
 
-  // Met à jour l'état local. En mode démo, persiste aussi en localStorage ;
-  // en mode API, la persistance passe par les appels api.* dédiés (voir les
-  // fonctions addJour/updatePhase/etc. dans le composant principal) —
-  // écrire ici en plus referait un appel générique sans savoir quoi sauver.
+  // Le localStorage sert TOUJOURS de copie de secours locale, même en mode
+  // API : la persistance réseau peut échouer silencieusement (voir les
+  // .catch(() => {}) dans les mutations), mieux vaut ne jamais dépendre du
+  // seul réseau pour ne pas perdre de saisie.
   const setJours = (next: ConducteurJour[]) => {
     setJoursState(next);
-    if (!USE_API) localStorage.setItem(key, JSON.stringify(next));
+    localStorage.setItem(key, JSON.stringify(next));
   };
 
   return { jours, setJours };
